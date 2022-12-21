@@ -96,6 +96,7 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
                 case GUI_BLUETOOTH_FORM: strcpy(ui->text, I18N_BLUETOOTH_MENU); break;
                 #endif
                 case GUI_RESET_FORM:     strcpy(ui->text, I18N_RESET_MENU);     break;
+                case GUI_ABOUT_FORM:     strcpy(ui->text, I18N_ABOUT_MENU);     break;
                 default:
                     // Текст в зависимости от режима работы
                     switch(WORKING_MODE) {

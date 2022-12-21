@@ -17,6 +17,7 @@
 #define I18N_SAFETY_MENU              "Безопасность"
 #define I18N_BLUETOOTH_MENU           "Bluetooth модуль"
 #define I18N_RESET_MENU               "Сброс настроек"
+#define I18N_ABOUT_MENU               "О проекте..."
 
 // Выбор режима ректификации
 #define I18N_AUTO_MODE                "Автоматически"

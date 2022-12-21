@@ -15,6 +15,7 @@
 #define GUI_SAFETY_FORM      6 // Безопасность
 #define GUI_BLUETOOTH_FORM   7 // Bluetooth модуль
 #define GUI_RESET_FORM       8 // Сброс настроек
+#define GUI_ABOUT_FORM       9 // О проекте
 #define GUI_RECTIFICATE_FORM 100 // Процесс ректификации
 #define GUI_CIRCULATE_FORM   150 // Отбор оборотного спирта
 #define GUI_FINISH_FORM      200 // Ректификация завершена
@@ -434,6 +435,7 @@ static const fds_t fds_data[] MUI_PROGMEM =
         MUI_7 I18N_BLUETOOTH_MENU "|" /* GUI_BLUETOOTH_FORM */
         #endif
         MUI_8 I18N_RESET_MENU "|"     /* GUI_RESET_FORM */
+        MUI_9 I18N_ABOUT_MENU "|"     /* GUI_ABOUT_FORM */
     )
     _MUI_XYA("MI", 5, 22, 0)
     _MUI_XYA("MI", 5, 31, 1)
@@ -531,6 +533,24 @@ static const fds_t fds_data[] MUI_PROGMEM =
     #endif
     _MUI_GOTO(33, 60, GUI_SETTING_FORM, I18N_NO_BUTTON)
     _MUI_GOTO(95, 60, GUI_RESET_FORM, I18N_YES_BUTTON)
+    
+    // О проекте
+    _MUI_FORM(GUI_ABOUT_FORM)
+    MUI_AUX("HL")
+    MUI_STYLE(0)
+    #ifdef I18N_ABOUT_TEXT_1
+    _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_1)
+    #endif
+    #ifdef I18N_ABOUT_TEXT_2
+    _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_2)
+    #endif
+    #ifdef I18N_ABOUT_TEXT_3
+    _MUI_XYAT("TL", 5, 40, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_3)
+    #endif
+    #ifdef I18N_ABOUT_TEXT_4
+    _MUI_XYAT("TL", 5, 49, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_4)
+    #endif
+    _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
     
     // Процесс ректификации
     _MUI_FORM(GUI_RECTIFICATE_FORM)

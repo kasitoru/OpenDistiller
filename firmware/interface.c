@@ -91,7 +91,9 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
                 case GUI_WORKING_FORM:   strcpy(ui->text, I18N_WORKING_MENU);   break;
                 case GUI_CUBETEMP_FORM:  strcpy(ui->text, I18N_CUBETEMP_MENU);  break;
                 case GUI_SAFETY_FORM:    strcpy(ui->text, I18N_SAFETY_MENU);    break;
+                #ifdef BLUETOOTH
                 case GUI_BLUETOOTH_FORM: strcpy(ui->text, I18N_BLUETOOTH_MENU); break;
+                #endif
                 case GUI_RESET_FORM:     strcpy(ui->text, I18N_RESET_MENU);     break;
                 default:
                     // Текст в зависимости от режима работы
@@ -285,7 +287,9 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
                 case GUI_WORKING_FORM:   // Время "работы на себя"
                 case GUI_CUBETEMP_FORM:  // Температура в кубе
                 case GUI_SAFETY_FORM:    // Безопасность
+                #ifdef BLUETOOTH
                 case GUI_BLUETOOTH_FORM: // Bluetooth модуль
+                #endif
                 case GUI_RESET_FORM:     // Сброс настроек
                     // Рассчитываем контрольную сумму
                     if(ui->arg == GUI_RESET_FORM) { // Если нужно сбросить настройки
@@ -405,8 +409,10 @@ static const muif_t muif_list[] MUI_PROGMEM = {
     MUIF_VARIABLE("WP", &CONFIG.water_protection, mui_u8g2_u8_chkbox_wm_pi), // Чекбокс: включить защиту по температуре воды
     MUIF_U8G2_U8_MIN_MAX("WM", &CONFIG.water_max_temperature, 40, 60, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: максимальная температура воды
     MUIF_U8G2_U8_MIN_MAX("FT", &CONFIG.phlegm_wait_time, 1, 10, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время сброса флегмы (мин)
+    #ifdef BLUETOOTH
     // Bluetooth модуль
     MUIF_VARIABLE("BT", &CONFIG.use_bluetooth, mui_u8g2_u8_radio_wm_pi), // Переключатель: использовать Bluetooth модуль
+    #endif
     // Ректификация завершена
     MUIF_RO("RU", mui_result_label_1), // Итоги ректификации (средняя надпись)
     MUIF_RO("RD", mui_result_label_2), // Итоги ректификации (нижняя надпись)
@@ -424,7 +430,9 @@ static const fds_t fds_data[] MUI_PROGMEM =
         MUI_4 I18N_WORKING_MENU "|"   /* GUI_WORKING_FORM */
         MUI_5 I18N_CUBETEMP_MENU "|"  /* GUI_CUBETEMP_FORM */
         MUI_6 I18N_SAFETY_MENU "|"    /* GUI_SAFETY_FORM */
+        #ifdef BLUETOOTH
         MUI_7 I18N_BLUETOOTH_MENU "|" /* GUI_BLUETOOTH_FORM */
+        #endif
         MUI_8 I18N_RESET_MENU "|"     /* GUI_RESET_FORM */
     )
     _MUI_XYA("MI", 5, 22, 0)
@@ -495,6 +503,7 @@ static const fds_t fds_data[] MUI_PROGMEM =
     MUI_XY("FT", 115, 49)
     _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
     
+    #ifdef BLUETOOTH
     // Bluetooth модуль
     _MUI_FORM(GUI_BLUETOOTH_FORM)
     MUI_AUX("HL")
@@ -502,6 +511,7 @@ static const fds_t fds_data[] MUI_PROGMEM =
     _MUI_XYAT("BT", 5, 22, 0, I18N_ENABLE_LABEL)
     _MUI_XYAT("BT", 5, 31, 1, I18N_DISABLE_LABEL)
     _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
+    #endif
     
     // Сброс настроек
     _MUI_FORM(GUI_RESET_FORM)

@@ -1,0 +1,6 @@
+[submodule "firmware/libraries/u8g2"]
+	path = firmware/libraries/u8g2
+	url = https://github.com/olikraus/u8g2
+[submodule "firmware/libraries/avr-ds18b20"]
+	path = firmware/libraries/avr-ds18b20
+	url = https://github.com/Jacajack/avr-ds18b20

@@ -20,10 +20,12 @@
 #define GUI_CIRCULATE_FORM   150 // Отбор оборотного спирта
 #define GUI_FINISH_FORM      200 // Ректификация завершена
 
-#define GUI_WATER_BUTTON     101 // Кнопка "ВОДА"
-#define GUI_HEAT_BUTTON      102 // Кнопка "НАГРЕВ"
-#define GUI_REFLUX_BUTTON    103 // Кнопка "ОТБОР"
-#define GUI_STOP_BUTTON      104 // Кнопка "СТОП"
+#ifdef MANUAL
+    #define GUI_WATER_BUTTON     101 // Кнопка "ВОДА"
+    #define GUI_HEAT_BUTTON      102 // Кнопка "НАГРЕВ"
+    #define GUI_REFLUX_BUTTON    103 // Кнопка "ОТБОР"
+    #define GUI_STOP_BUTTON      104 // Кнопка "СТОП"
+#endif
 #define GUI_ENWATER_BUTTON   105 // Кнопка "ВКЛ ВОДУ"
 #define GUI_SKIP_BUTTON      106 // Кнопка "ПРОПУСТИТЬ"
 #define GUI_GETBODY_BUTTON   107 // Кнопка "ОТБОР ТЕЛА"
@@ -100,7 +102,9 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
                 default:
                     // Текст в зависимости от режима работы
                     switch(WORKING_MODE) {
-                        case WM_MANUAL:    strcpy(ui->text, I18N_MANUAL_TITLE);    break;
+                        #ifdef MANUAL
+                            case WM_MANUAL:    strcpy(ui->text, I18N_MANUAL_TITLE);    break;
+                        #endif
                         case WM_HEATING:
                         case WM_WATERING:  strcpy(ui->text, I18N_HEATING_TITLE);   break;
                         case WM_WORKING:   strcpy(ui->text, I18N_WORKING_TITLE);   break;
@@ -211,17 +215,19 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
         case MUIF_MSG_DRAW: // Отрисовка кнопок навигации
         case MUIF_MSG_CURSOR_ENTER: // Навели фокус на кнопку
             switch(WORKING_MODE) { // Для режимов
-                case WM_MANUAL: // Ручной режим
-                    switch(ui->arg) {
-                        case GUI_WATER_BUTTON: // Кнопка "ВОДА"
-                        case GUI_HEAT_BUTTON: // Кнопка "НАГРЕВ"
-                        case GUI_REFLUX_BUTTON: // Кнопка "ОТБОР"
-                        case GUI_STOP_BUTTON: // Кнопка "СТОП"
-                            // Кнопки минимально возможной ширины
-                            return mui_u8g2_btn_goto_wm_fi(ui, msg);
-                        default: // Все остальные кнопки
-                            return 255; // Игнорируем
-                    }
+                #ifdef MANUAL
+                    case WM_MANUAL: // Ручной режим
+                        switch(ui->arg) {
+                            case GUI_WATER_BUTTON: // Кнопка "ВОДА"
+                            case GUI_HEAT_BUTTON: // Кнопка "НАГРЕВ"
+                            case GUI_REFLUX_BUTTON: // Кнопка "ОТБОР"
+                            case GUI_STOP_BUTTON: // Кнопка "СТОП"
+                                // Кнопки минимально возможной ширины
+                                return mui_u8g2_btn_goto_wm_fi(ui, msg);
+                            default: // Все остальные кнопки
+                                return 255; // Игнорируем
+                        }
+                #endif
                 case WM_HEATING: // Нагрев куба
                     switch(ui->arg) {
                         case GUI_ENWATER_BUTTON: // Кнопка "ВКЛ ВОДУ"
@@ -311,16 +317,18 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
                     break;
                 case GUI_RECTIFICATE_FORM: // Процесс ректификации
                     switch(ui->arg) { // Нажатая кнопка
-                        case GUI_WATER_BUTTON: // Кнопка "ВОДА" (ручной режим)
-                            PORTC ^= _BV(PC5); // Вкл/откл реле №1
-                            break;
-                        case GUI_HEAT_BUTTON: // Кнопка "НАГРЕВ" (ручной режим)
-                            PORTC ^= _BV(PC4); // Вкл/откл реле №2
-                            break;
-                        case GUI_REFLUX_BUTTON: // Кнопка "ОТБОР" (ручной режим)
-                            PORTC ^= _BV(PC3); // Вкл/откл реле №3
-                            break;
-                        case GUI_STOP_BUTTON: // Кнопка "СТОП" (ручной режим)
+                        #ifdef MANUAL
+                            case GUI_WATER_BUTTON: // Кнопка "ВОДА" (ручной режим)
+                                PORTC ^= _BV(PC5); // Вкл/откл реле №1
+                                break;
+                            case GUI_HEAT_BUTTON: // Кнопка "НАГРЕВ" (ручной режим)
+                                PORTC ^= _BV(PC4); // Вкл/откл реле №2
+                                break;
+                            case GUI_REFLUX_BUTTON: // Кнопка "ОТБОР" (ручной режим)
+                                PORTC ^= _BV(PC3); // Вкл/откл реле №3
+                                break;
+                            case GUI_STOP_BUTTON: // Кнопка "СТОП" (ручной режим)
+                        #endif
                         case GUI_FINISH_BUTTON: // Кнопка "ЗАВЕРШИТЬ" (автоматический режим)
                             set_working_mode(WM_DONE, GUI_FINISH_FORM); // Завершаем отбор
                             break;
@@ -449,7 +457,9 @@ static const fds_t fds_data[] MUI_PROGMEM =
     MUI_AUX("HL")
     MUI_STYLE(0)
     _MUI_XYAT("RM", 5, 22, 0, I18N_AUTO_MODE)
-    _MUI_XYAT("RM", 5, 31, 1, I18N_MANUAL_MODE)
+    #ifdef MANUAL
+        _MUI_XYAT("RM", 5, 31, 1, I18N_MANUAL_MODE)
+    #endif
     _MUI_GOTO(33, 60, GUI_SETTING_FORM, I18N_CANCEL_BUTTON)
     _MUI_GOTO(95, 60, GUI_RECTIFICATE_FORM, I18N_START_BUTTON)
     
@@ -569,10 +579,12 @@ static const fds_t fds_data[] MUI_PROGMEM =
     _MUI_XYAT("TV", 0, 48, TEMP_VALUE_TSARGA, "C")
     _MUI_XYAT("TV", 0, 48, TEMP_VALUE_REFLUX, "R")
     MUI_STYLE(0)
-    _MUI_GOTO(16, 60, GUI_WATER_BUTTON, I18N_WATER_BUTTON)
-    _MUI_GOTO(48, 60, GUI_HEAT_BUTTON, I18N_HEAT_BUTTON)
-    _MUI_GOTO(83, 60, GUI_REFLUX_BUTTON, I18N_REFLUX_BUTTON)
-    _MUI_GOTO(113, 60, GUI_STOP_BUTTON, I18N_STOP_BUTTON)
+    #ifdef MANUAL
+        _MUI_GOTO(16, 60, GUI_WATER_BUTTON, I18N_WATER_BUTTON)
+        _MUI_GOTO(48, 60, GUI_HEAT_BUTTON, I18N_HEAT_BUTTON)
+        _MUI_GOTO(83, 60, GUI_REFLUX_BUTTON, I18N_REFLUX_BUTTON)
+        _MUI_GOTO(113, 60, GUI_STOP_BUTTON, I18N_STOP_BUTTON)
+    #endif
     _MUI_GOTO(33, 60, GUI_ENWATER_BUTTON, I18N_ENWATER_BUTTON)
     _MUI_GOTO(33, 60, GUI_SKIP_BUTTON, I18N_SKIP_BUTTON)
     _MUI_GOTO(33, 60, GUI_GETBODY_BUTTON, I18N_GETBODY_BUTTON)

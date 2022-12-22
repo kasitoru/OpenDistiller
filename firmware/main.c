@@ -324,8 +324,10 @@ void loop(uint8_t *is_redraw) {
             PORTC |= _BV(PC4); // Отключаем нагрев
             PORTC |= _BV(PC5); // Отключаем воду
             break;
-        case WM_MANUAL: // Ручной режим
-            break;
+        #ifdef MANUAL
+            case WM_MANUAL: // Ручной режим
+                break;
+        #endif
         case WM_HEATING: // Нагрев куба
             // Управляем реле
             PORTC |= _BV(PC3); // Отключаем отбор

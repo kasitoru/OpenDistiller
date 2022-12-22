@@ -8,7 +8,7 @@ CHCP 65001 > nul
 REM ==================================================
 SET "VERSION=1.0"
 SET "LANGUAGE=RU"
-SET "MODULES=UART,BLUETOOTH"
+SET "MODULES=MANUAL,UART,BLUETOOTH"
 
 SET "CROSS_COMPILE=C:\Program Files\avr-gcc\bin\avr-"
 REM ==================================================

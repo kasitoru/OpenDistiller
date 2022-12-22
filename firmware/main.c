@@ -15,12 +15,15 @@
 #include "libraries/u8x8_avr/u8x8_avr.h" // Дисплей
 #include "libraries/u8g2/csrc/mui_u8g2.h" // U8g2
 #include "libraries/tone/tone.h" // Звуки
-#include "libraries/uart/uart.h" // COM-порт
 #include "libraries/functions.h" // Разное
 
+#if defined(UART) || defined(DEBUG)
+    #include "libraries/uart/uart.h" // Последовательный порт
     #ifdef DEBUG
         #include "libraries/debug/debug.h" // Функции отладки
     #endif
+#endif
+
 // Глобальные переменные
 u8g2_t u8g2; // Дисплей
 mui_t mui; // Интерфейс
@@ -98,7 +101,9 @@ void set_working_mode(uint8_t mode, uint8_t form) {
     last_event_time = now_millis; // Обновляем время последнего события
     WORKING_MODE = mode; // Устанавливаем режим на новый
     mui_GotoFormAutoCursorPosition(&mui, form); // Переходим к нужной форме
-    uart_printf("MODE:%i\n", mode); // Отправляем данные в UART
+    #ifdef UART
+        uart_printf("MODE:%i\n", mode); // Отправляем данные в UART
+    #endif
     // Устанавливаем фокус на первый элемент формы
     if(mui_GetCurrentFormId(&mui) == GUI_RECTIFICATE_FORM) {{ // Только для рабочего процесса
         uint8_t element = UCHAR_MAX; // Позиция самого первого элемента
@@ -154,9 +159,10 @@ int main(void) {
         // Bluetooth модуль
         DDRB |= _BV(PB4); // Управление питанием
     #endif
+    #if defined(UART) || defined(DEBUG)
+        // Последовательный порт
+        uart_init(9600);
     #endif
-    // Последовательный порт
-	uart_init(9600);
     // Читаем настройки из памяти
     eeprom_busy_wait(); // Ждем доступности EEPROM
     eeprom_read_block(&CONFIG, 0, sizeof(CONFIG)); // Получаем данные
@@ -255,7 +261,9 @@ void loop(uint8_t *is_redraw) {
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != water_temperature)/* && !(temperature_integer == 1360 && !water_temperature)*/) {
                 water_temperature = temperature_float;
-                uart_printf("WATER:%.2f\n", water_temperature);
+                #ifdef UART
+                    uart_printf("WATER:%.2f\n", water_temperature);
+                #endif
                 *is_redraw = 1;
             }
             // Температура трубки связи с атмосферой (датчик 2)
@@ -263,7 +271,9 @@ void loop(uint8_t *is_redraw) {
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != tsa_temperature)/* && !(temperature_integer == 1360 && !tsa_temperature)*/) {
                 tsa_temperature = temperature_float;
-                uart_printf("TSA:%.2f\n", tsa_temperature);
+                #ifdef UART
+                    uart_printf("TSA:%.2f\n", tsa_temperature);
+                #endif
                 *is_redraw = 1;
             }
             // Температура флегмы в узле отбора (датчик 3)
@@ -271,7 +281,9 @@ void loop(uint8_t *is_redraw) {
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != reflux_temperature)/* && !(temperature_integer == 1360 && !reflux_temperature)*/) {
                 reflux_temperature = temperature_float;
-                uart_printf("REFLUX:%.2f\n", reflux_temperature);
+                #ifdef UART
+                    uart_printf("REFLUX:%.2f\n", reflux_temperature);
+                #endif
                 *is_redraw = 1;
             }
             // Температура в царге (датчик 4)
@@ -279,7 +291,9 @@ void loop(uint8_t *is_redraw) {
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != tsarga_temperature)/* && !(temperature_integer == 1360 && !tsarga_temperature)*/) {
                 tsarga_temperature = temperature_float;
-                uart_printf("TSARGA:%.2f\n", tsarga_temperature);
+                #ifdef UART
+                    uart_printf("TSARGA:%.2f\n", tsarga_temperature);
+                #endif
                 *is_redraw = 1;
             }
             // Температура в кубе (датчик 5)
@@ -287,7 +301,9 @@ void loop(uint8_t *is_redraw) {
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != cube_temperature)/* && !(temperature_integer == 1360 && !cube_temperature)*/) {
                 cube_temperature = temperature_float;
-                uart_printf("CUBE:%.2f\n", cube_temperature);
+                #ifdef UART
+                    uart_printf("CUBE:%.2f\n", cube_temperature);
+                #endif
                 *is_redraw = 1;
             }
         }

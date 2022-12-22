@@ -18,7 +18,7 @@ RMDIR /S /Q temp
 MKDIR temp
 CD temp
 
-SET "DEFINES="
+SET "DEFINES=-DVERSION=\"%VERSION%\" -DLANG=%LANGUAGE%"
 SETLOCAL EnableDelayedExpansion
 FOR %%M IN ("%MODULES:,=" "%") DO (
     IF NOT %%M == "" (
@@ -61,7 +61,7 @@ IF DEFINED MODULE_UART (
 )
 
 ECHO Компиляция main.c...
-CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DVERSION=\"%VERSION%\" %DEFINES% -DLANG=%LANGUAGE% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -I ../libraries/u8g2/csrc/ -c ../main.c"
+CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% %DEFINES% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -I ../libraries/u8g2/csrc/ -c ../main.c"
 
 ECHO Линковка файлов...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% *.o -o firmware.o"

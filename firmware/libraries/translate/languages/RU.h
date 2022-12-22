@@ -64,6 +64,8 @@
 
 // О проекте
 #define I18N_ABOUT_TEXT_1             "OpenDistiller " VERSION
+#define I18N_ABOUT_TEXT_2             "Автор: Сергей Авдеев"
+
 // Процесс ректификации
 #define I18N_MANUAL_TITLE             "Ручной режим"
 #define I18N_HEATING_TITLE            "Нагрев куба"

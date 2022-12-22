@@ -65,6 +65,7 @@
 // О проекте
 #define I18N_ABOUT_TEXT_1             "OpenDistiller " VERSION
 #define I18N_ABOUT_TEXT_2             "Автор: Сергей Авдеев"
+#define I18N_ABOUT_TEXT_3             "HTTPS://KASITO.RU"
 
 // Процесс ректификации
 #define I18N_MANUAL_TITLE             "Ручной режим"

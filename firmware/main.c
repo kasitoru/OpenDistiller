@@ -18,6 +18,9 @@
 #include "libraries/uart/uart.h" // COM-порт
 #include "libraries/functions.h" // Разное
 
+    #ifdef DEBUG
+        #include "libraries/debug/debug.h" // Функции отладки
+    #endif
 // Глобальные переменные
 u8g2_t u8g2; // Дисплей
 mui_t mui; // Интерфейс

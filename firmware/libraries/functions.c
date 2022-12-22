@@ -68,16 +68,6 @@ uint8_t crc8(uint8_t *buffer, uint8_t size) {
     return crc;
 }
 
-#ifdef DEBUG
-// Свободная оперативная память
-// https://robocraft.ru/arduino/531
-uint16_t free_ram() {
-    extern uint16_t __heap_start, *__brkval;
-    uint16_t v;
-    return (uint16_t) &v - (__brkval == 0 ? (uint16_t) &__heap_start : (uint16_t) __brkval);
-}
-#endif
-
 // Перезагрузка микроконтроллера
 // https://www.avrfreaks.net/forum/reset-atmega-software
 void restart_atmega() {

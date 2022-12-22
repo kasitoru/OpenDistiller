@@ -31,6 +31,9 @@ CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/tone/*.c"
 ECHO Компиляция libraries/functions.c...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/functions.c"
 
+ECHO Компиляция libraries/debug...
+CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/debug/*.c"
+
 ECHO Компиляция main.c...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DBLUETOOTH -DLANG=RU -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -I ../libraries/u8g2/csrc/ -c ../main.c"
 

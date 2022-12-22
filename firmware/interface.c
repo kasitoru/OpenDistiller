@@ -93,7 +93,7 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
                 case GUI_CUBETEMP_FORM:  strcpy(ui->text, I18N_CUBETEMP_MENU);  break;
                 case GUI_SAFETY_FORM:    strcpy(ui->text, I18N_SAFETY_MENU);    break;
                 #ifdef BLUETOOTH
-                case GUI_BLUETOOTH_FORM: strcpy(ui->text, I18N_BLUETOOTH_MENU); break;
+                    case GUI_BLUETOOTH_FORM: strcpy(ui->text, I18N_BLUETOOTH_MENU); break;
                 #endif
                 case GUI_RESET_FORM:     strcpy(ui->text, I18N_RESET_MENU);     break;
                 case GUI_ABOUT_FORM:     strcpy(ui->text, I18N_ABOUT_MENU);     break;
@@ -290,7 +290,7 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
                 case GUI_CUBETEMP_FORM:  // Температура в кубе
                 case GUI_SAFETY_FORM:    // Безопасность
                 #ifdef BLUETOOTH
-                case GUI_BLUETOOTH_FORM: // Bluetooth модуль
+                    case GUI_BLUETOOTH_FORM: // Bluetooth модуль
                 #endif
                 case GUI_RESET_FORM:     // Сброс настроек
                     // Рассчитываем контрольную сумму
@@ -412,8 +412,8 @@ static const muif_t muif_list[] MUI_PROGMEM = {
     MUIF_U8G2_U8_MIN_MAX("WM", &CONFIG.water_max_temperature, 40, 60, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: максимальная температура воды
     MUIF_U8G2_U8_MIN_MAX("FT", &CONFIG.phlegm_wait_time, 1, 10, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время сброса флегмы (мин)
     #ifdef BLUETOOTH
-    // Bluetooth модуль
-    MUIF_VARIABLE("BT", &CONFIG.use_bluetooth, mui_u8g2_u8_radio_wm_pi), // Переключатель: использовать Bluetooth модуль
+        // Bluetooth модуль
+        MUIF_VARIABLE("BT", &CONFIG.use_bluetooth, mui_u8g2_u8_radio_wm_pi), // Переключатель: использовать Bluetooth модуль
     #endif
     // Ректификация завершена
     MUIF_RO("RU", mui_result_label_1), // Итоги ректификации (средняя надпись)
@@ -433,7 +433,7 @@ static const fds_t fds_data[] MUI_PROGMEM =
         MUI_5 I18N_CUBETEMP_MENU "|"  /* GUI_CUBETEMP_FORM */
         MUI_6 I18N_SAFETY_MENU "|"    /* GUI_SAFETY_FORM */
         #ifdef BLUETOOTH
-        MUI_7 I18N_BLUETOOTH_MENU "|" /* GUI_BLUETOOTH_FORM */
+            MUI_7 I18N_BLUETOOTH_MENU "|" /* GUI_BLUETOOTH_FORM */
         #endif
         MUI_8 I18N_RESET_MENU "|"     /* GUI_RESET_FORM */
         MUI_9 I18N_ABOUT_MENU "|"     /* GUI_ABOUT_FORM */
@@ -507,13 +507,13 @@ static const fds_t fds_data[] MUI_PROGMEM =
     _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
     
     #ifdef BLUETOOTH
-    // Bluetooth модуль
-    _MUI_FORM(GUI_BLUETOOTH_FORM)
-    MUI_AUX("HL")
-    MUI_STYLE(0)
-    _MUI_XYAT("BT", 5, 22, 0, I18N_ENABLE_LABEL)
-    _MUI_XYAT("BT", 5, 31, 1, I18N_DISABLE_LABEL)
-    _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
+        // Bluetooth модуль
+        _MUI_FORM(GUI_BLUETOOTH_FORM)
+        MUI_AUX("HL")
+        MUI_STYLE(0)
+        _MUI_XYAT("BT", 5, 22, 0, I18N_ENABLE_LABEL)
+        _MUI_XYAT("BT", 5, 31, 1, I18N_DISABLE_LABEL)
+        _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
     #endif
     
     // Сброс настроек
@@ -521,16 +521,16 @@ static const fds_t fds_data[] MUI_PROGMEM =
     MUI_AUX("HL")
     MUI_STYLE(0)
     #ifdef I18N_RESET_TEXT_1
-    _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_CENTER, I18N_RESET_TEXT_1)
+        _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_CENTER, I18N_RESET_TEXT_1)
     #endif
     #ifdef I18N_RESET_TEXT_2
-    _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_CENTER, I18N_RESET_TEXT_2)
+        _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_CENTER, I18N_RESET_TEXT_2)
     #endif
     #ifdef I18N_RESET_TEXT_3
-    _MUI_XYAT("TL", 5, 40, TEXTLABEL_ALIGN_CENTER, I18N_RESET_TEXT_3)
+        _MUI_XYAT("TL", 5, 40, TEXTLABEL_ALIGN_CENTER, I18N_RESET_TEXT_3)
     #endif
     #ifdef I18N_RESET_TEXT_4
-    _MUI_XYAT("TL", 5, 49, TEXTLABEL_ALIGN_CENTER, I18N_RESET_TEXT_4)
+        _MUI_XYAT("TL", 5, 49, TEXTLABEL_ALIGN_CENTER, I18N_RESET_TEXT_4)
     #endif
     _MUI_GOTO(33, 60, GUI_SETTING_FORM, I18N_NO_BUTTON)
     _MUI_GOTO(95, 60, GUI_RESET_FORM, I18N_YES_BUTTON)
@@ -540,16 +540,16 @@ static const fds_t fds_data[] MUI_PROGMEM =
     MUI_AUX("HL")
     MUI_STYLE(0)
     #ifdef I18N_ABOUT_TEXT_1
-    _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_1)
+        _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_1)
     #endif
     #ifdef I18N_ABOUT_TEXT_2
-    _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_2)
+        _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_2)
     #endif
     #ifdef I18N_ABOUT_TEXT_3
-    _MUI_XYAT("TL", 5, 40, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_3)
+        _MUI_XYAT("TL", 5, 40, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_3)
     #endif
     #ifdef I18N_ABOUT_TEXT_4
-    _MUI_XYAT("TL", 5, 49, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_4)
+        _MUI_XYAT("TL", 5, 49, TEXTLABEL_ALIGN_CENTER, I18N_ABOUT_TEXT_4)
     #endif
     _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
     
@@ -584,16 +584,16 @@ static const fds_t fds_data[] MUI_PROGMEM =
     MUI_AUX("HL")
     MUI_STYLE(0)
     #ifdef I18N_CIRCULATE_TEXT_1
-    _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_CENTER, I18N_CIRCULATE_TEXT_1)
+        _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_CENTER, I18N_CIRCULATE_TEXT_1)
     #endif
     #ifdef I18N_CIRCULATE_TEXT_2
-    _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_CENTER, I18N_CIRCULATE_TEXT_2)
+        _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_CENTER, I18N_CIRCULATE_TEXT_2)
     #endif
     #ifdef I18N_CIRCULATE_TEXT_3
-    _MUI_XYAT("TL", 5, 40, TEXTLABEL_ALIGN_CENTER, I18N_CIRCULATE_TEXT_3)
+        _MUI_XYAT("TL", 5, 40, TEXTLABEL_ALIGN_CENTER, I18N_CIRCULATE_TEXT_3)
     #endif
     #ifdef I18N_CIRCULATE_TEXT_4
-    _MUI_XYAT("TL", 5, 49, TEXTLABEL_ALIGN_CENTER, I18N_CIRCULATE_TEXT_4)
+        _MUI_XYAT("TL", 5, 49, TEXTLABEL_ALIGN_CENTER, I18N_CIRCULATE_TEXT_4)
     #endif
     _MUI_GOTO(33, 60, GUI_RECTIFICATE_FORM, I18N_CONTINUE_BUTTON)
     _MUI_GOTO(95, 60, GUI_FINISH_FORM, I18N_FINISH_BUTTON)

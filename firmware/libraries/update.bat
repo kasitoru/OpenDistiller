@@ -6,7 +6,7 @@
 CHCP 65001 > nul
 
 ECHO Обновление библиотек...
-git pull --recurse-submodules
-git submodule update --remote --recursive
+GIT pull --recurse-submodules
+GIT submodule update --remote --recursive
 
-pause
+PAUSE

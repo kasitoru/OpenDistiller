@@ -58,7 +58,7 @@ typedef struct {
     uint8_t water_max_temperature; // Максимальная температура воды
     uint8_t phlegm_wait_time; // Время сброса флегмы (мин)
     #ifdef BLUETOOTH
-    uint8_t use_bluetooth; // Использовать Bluetooth модуль
+        uint8_t use_bluetooth; // Использовать Bluetooth модуль
     #endif
     uint8_t crc; // Контрольная сумма настроек
 } CFG_DATA;
@@ -148,8 +148,9 @@ int main(void) {
     DDRC |= _BV(PC4); PORTC |= _BV(PC4); // Реле №2
     DDRC |= _BV(PC3); PORTC |= _BV(PC3); // Реле №3
     #ifdef BLUETOOTH
-    // Bluetooth модуль
-    DDRB |= _BV(PB4); // Управление питанием
+        // Bluetooth модуль
+        DDRB |= _BV(PB4); // Управление питанием
+    #endif
     #endif
     // Последовательный порт
 	uart_init(9600);
@@ -178,7 +179,7 @@ int main(void) {
         CONFIG.water_max_temperature = 60; // Максимальная температура воды (от 40 до 60)
         CONFIG.phlegm_wait_time = 1; // Время сброса флегмы в минутах (от 1 до 10) // FIXME
         #ifdef BLUETOOTH
-        CONFIG.use_bluetooth = 0; // Использовать Bluetooth модуль (0 = нет, 1 = да)
+            CONFIG.use_bluetooth = 0; // Использовать Bluetooth модуль (0 = нет, 1 = да)
         #endif
         CONFIG.crc = 0x00; // Контрольная сумма CRC8
     }
@@ -199,19 +200,19 @@ void loop(uint8_t *is_redraw) {
     // Запоминаем текущее время
     now_millis = get_millis();
     #ifdef DEBUG
-    // Если включен режим отладки
-    if((now_millis % 1000) == 0) { // Каждую секунду
-        // Отправляем количество свободной оперативной памяти
-        uart_printf("RAM:%i\n", free_ram());
-    }
+        // Если включен режим отладки
+        if((now_millis % 1000) == 0) { // Каждую секунду
+            // Отправляем количество свободной оперативной памяти
+            uart_printf("RAM:%i\n", free_ram());
+        }
     #endif
     #ifdef BLUETOOTH
-    // Управление Bluetooth модулем
-    if(CONFIG.use_bluetooth) {
-        PORTB |= _BV(PB4); // Включаем
-    } else {
-        PORTB &= ~_BV(PB4); // Отключаем
-    }
+        // Управление Bluetooth модулем
+        if(CONFIG.use_bluetooth) {
+            PORTB |= _BV(PB4); // Включаем
+        } else {
+            PORTB &= ~_BV(PB4); // Отключаем
+        }
     #endif
     // Опрос кнопок
     switch(u8x8_GetMenuEvent(u8g2_GetU8x8(&u8g2))) {

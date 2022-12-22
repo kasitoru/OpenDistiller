@@ -5,6 +5,7 @@
 @ECHO off
 CHCP 65001 > nul
 
+SET "VERSION=1.0"
 SET "CROSS_COMPILE=C:\Program Files\avr-gcc\bin\avr-"
 SET "CCFLAGS=-Wall -Os -mmcu=atmega328p -DF_CPU=16000000L -ffunction-sections -fdata-sections -Wl,--gc-sections,-u,vfprintf -lprintf_flt --param=min-pagesize=0"
 
@@ -35,7 +36,7 @@ ECHO Компиляция libraries/debug...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/debug/*.c"
 
 ECHO Компиляция main.c...
-CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DUART -DBLUETOOTH -DLANG=RU -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -I ../libraries/u8g2/csrc/ -c ../main.c"
+CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DVERSION=\"%VERSION%\" -DUART -DBLUETOOTH -DLANG=RU -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -I ../libraries/u8g2/csrc/ -c ../main.c"
 
 ECHO Линковка файлов...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% *.o -o firmware.o"

@@ -4,6 +4,10 @@
     URL: https://github.com/kasitoru/OpenDistiller
 */
 
+#ifndef VERSION
+    #define VERSION ""
+#endif
+
 // Шрифты
 #define I18N_NORMAL_FONT              u8g2_font_5x8_t_cyrillic
 #define I18N_BOLD_FONT                u8g2_font_6x13B_t_cyrillic
@@ -58,6 +62,8 @@
 #define I18N_NO_BUTTON                "Нет"
 #define I18N_YES_BUTTON               "Да"
 
+// О проекте
+#define I18N_ABOUT_TEXT_1             "OpenDistiller " VERSION
 // Процесс ректификации
 #define I18N_MANUAL_TITLE             "Ручной режим"
 #define I18N_HEATING_TITLE            "Нагрев куба"

@@ -82,16 +82,19 @@
 #define HW_BUZZER_PORT       PORTB
 
 // Реле
+#define HW_RELAY_1_INVERTED  1
 #define HW_RELAY_1_BIT       PC5
 #define HW_RELAY_1_PIN       PINC
 #define HW_RELAY_1_DDR       DDRC
 #define HW_RELAY_1_PORT      PORTC
 
+#define HW_RELAY_2_INVERTED  1
 #define HW_RELAY_2_BIT       PC4
 #define HW_RELAY_2_PIN       PINC
 #define HW_RELAY_2_DDR       DDRC
 #define HW_RELAY_2_PORT      PORTC
 
+#define HW_RELAY_3_INVERTED  1
 #define HW_RELAY_3_BIT       PC3
 #define HW_RELAY_3_PIN       PINC
 #define HW_RELAY_3_DDR       DDRC

@@ -7,6 +7,7 @@
 // https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Tone.cpp
 
 #include <avr/interrupt.h>
+#include "../../hardware.h" // Номера портов
 
 volatile uint32_t _tone_toggle_count;
 
@@ -64,7 +65,7 @@ void noTone() {
 // Таймер
 ISR(TIMER2_COMPA_vect) {
     if(_tone_toggle_count != 0) {
-        PORTB ^= _BV(PB1);
+        HW_BUZZER_PORT ^= _BV(HW_BUZZER_BIT);
         if(_tone_toggle_count > 0)
             _tone_toggle_count--;
     } else {
@@ -75,6 +76,6 @@ ISR(TIMER2_COMPA_vect) {
         TCCR2B = (TCCR2B & 0b11111000) | _BV(CS22);
         OCR2A = 0;
         // Обесточиваем порт
-        PORTB &= ~_BV(PB1);
+        HW_BUZZER_PORT &= ~_BV(HW_BUZZER_BIT);
     }
 }

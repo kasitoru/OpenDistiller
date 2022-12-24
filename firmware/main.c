@@ -13,9 +13,11 @@
 
 #include "libraries/avr-ds18b20/include/ds18b20/ds18b20.h" // Датчики
 #include "libraries/u8x8_avr/u8x8_avr.h" // Дисплей
-#include "libraries/u8g2/csrc/mui_u8g2.h" // U8g2
+#include "libraries/u8g2/csrc/u8g2.h" // U8g2
+#include "libraries/u8g2/csrc/mui_u8g2.h" // MUI
 #include "libraries/tone/tone.h" // Звуки
 #include "libraries/functions.h" // Разное
+#include "hardware.h" // Номера портов
 
 #if defined(UART) || defined(DEBUG)
     #include "libraries/uart/uart.h" // Последовательный порт
@@ -131,33 +133,30 @@ int main(void) {
     init_millis(); // Инициализация счетчика миллисекунд
     // Дисплей
     u8g2_Setup_st7920_s_128x64_1(&u8g2, U8G2_R0, u8x8_byte_avr_hw_spi, u8x8_avr_gpio_and_delay);
-    u8x8_SetPin(u8g2_GetU8x8(&u8g2), U8X8_PIN_SPI_CLOCK, U8X8_AVR_PB5);
-    u8x8_SetPin(u8g2_GetU8x8(&u8g2), U8X8_PIN_SPI_DATA, U8X8_AVR_PB3);
-    u8x8_SetPin(u8g2_GetU8x8(&u8g2), U8X8_PIN_CS, U8X8_AVR_PB2);
     u8g2_InitDisplay(&u8g2);
-    u8g2_ClearDisplay(&u8g2);
     u8g2_SetPowerSave(&u8g2, 0);
+    u8g2_ClearDisplay(&u8g2);
     // Кнопки
-    DDRD &= ~_BV(PD4); u8g2_SetMenuPrevPin(&u8g2, U8X8_AVR_PB0); // Кнопка №1
-    DDRD &= ~_BV(PD5); u8g2_SetMenuNextPin(&u8g2, U8X8_AVR_PD7); // Кнопка №2
-    DDRD &= ~_BV(PD6); u8g2_SetMenuSelectPin(&u8g2, U8X8_AVR_PD6); // Кнопка №3
-    DDRD &= ~_BV(PD7); u8g2_SetMenuDownPin(&u8g2, U8X8_AVR_PD5); // Кнопка №4
-    DDRB &= ~_BV(PB0); u8g2_SetMenuUpPin(&u8g2, U8X8_AVR_PD4); // Кнопка №5
+    HW_BUTTON_1_DDR &= ~_BV(HW_BUTTON_1_BIT); // Кнопка №1
+    HW_BUTTON_2_DDR &= ~_BV(HW_BUTTON_2_BIT); // Кнопка №2
+    HW_BUTTON_3_DDR &= ~_BV(HW_BUTTON_3_BIT); // Кнопка №3
+    HW_BUTTON_4_DDR &= ~_BV(HW_BUTTON_4_BIT); // Кнопка №4
+    HW_BUTTON_5_DDR &= ~_BV(HW_BUTTON_5_BIT); // Кнопка №5
     // Датчики
-    DDRC &= ~_BV(PC0); ds18b20wsp(&PORTC, &DDRC, &PINC, _BV(PC0), NULL, -55, 125, DS18B20_RES12); // Датчик №1
-    DDRC &= ~_BV(PC1); ds18b20wsp(&PORTC, &DDRC, &PINC, _BV(PC1), NULL, -55, 125, DS18B20_RES12); // Датчик №2
-    DDRC &= ~_BV(PC2); ds18b20wsp(&PORTC, &DDRC, &PINC, _BV(PC2), NULL, -55, 125, DS18B20_RES12); // Датчик №3
-    DDRD &= ~_BV(PD3); ds18b20wsp(&PORTD, &DDRD, &PIND, _BV(PD3), NULL, -55, 125, DS18B20_RES12); // Датчик №4
-    DDRD &= ~_BV(PD2); ds18b20wsp(&PORTD, &DDRD, &PIND, _BV(PD2), NULL, -55, 125, DS18B20_RES12); // Датчик №5
+    HW_SENSOR_1_DDR &= ~_BV(HW_SENSOR_1_BIT); ds18b20wsp(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №1
+    HW_SENSOR_2_DDR &= ~_BV(HW_SENSOR_2_BIT); ds18b20wsp(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №2
+    HW_SENSOR_3_DDR &= ~_BV(HW_SENSOR_3_BIT); ds18b20wsp(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №3
+    HW_SENSOR_4_DDR &= ~_BV(HW_SENSOR_4_BIT); ds18b20wsp(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №4
+    HW_SENSOR_5_DDR &= ~_BV(HW_SENSOR_5_BIT); ds18b20wsp(&HW_SENSOR_5_PORT, &HW_SENSOR_5_DDR, &HW_SENSOR_5_PIN, _BV(HW_SENSOR_5_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №5
     // Звук
-    DDRB |= _BV(PB1); // Зуммер
+    HW_BUZZER_DDR |= _BV(HW_BUZZER_BIT); // Зуммер
     // Реле
-    DDRC |= _BV(PC5); PORTC |= _BV(PC5); // Реле №1
-    DDRC |= _BV(PC4); PORTC |= _BV(PC4); // Реле №2
-    DDRC |= _BV(PC3); PORTC |= _BV(PC3); // Реле №3
+    HW_RELAY_1_DDR |= _BV(HW_RELAY_1_BIT); HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT); // Реле №1
+    HW_RELAY_2_DDR |= _BV(HW_RELAY_2_BIT); HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT); // Реле №2
+    HW_RELAY_3_DDR |= _BV(HW_RELAY_3_BIT); HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT); // Реле №3
     #ifdef BLUETOOTH
         // Bluetooth модуль
-        DDRB |= _BV(PB4); // Управление питанием
+        HW_BLUETOOTH_EN_DDR |= _BV(HW_BLUETOOTH_EN_BIT); // Управление питанием
     #endif
     #if defined(UART) || defined(DEBUG)
         // Последовательный порт
@@ -192,8 +191,6 @@ int main(void) {
         #endif
         CONFIG.crc = 0x00; // Контрольная сумма CRC8
     }
-    // Очищаем дисплей
-    u8g2_ClearDisplay(&u8g2);
     // Инициализация MUI-интерфейса
     mui_Init(&mui, &u8g2, fds_data, muif_list, sizeof(muif_list)/sizeof(muif_t));
     // Открываем форму настроек
@@ -218,9 +215,9 @@ void loop(uint8_t *is_redraw) {
     #ifdef BLUETOOTH
         // Управление Bluetooth модулем
         if(CONFIG.use_bluetooth) {
-            PORTB |= _BV(PB4); // Включаем
+            HW_BLUETOOTH_EN_PORT |= _BV(HW_BLUETOOTH_EN_BIT); // Включаем
         } else {
-            PORTB &= ~_BV(PB4); // Отключаем
+            HW_BLUETOOTH_EN_PORT &= ~_BV(HW_BLUETOOTH_EN_BIT); // Отключаем
         }
     #endif
     // Опрос кнопок
@@ -257,7 +254,7 @@ void loop(uint8_t *is_redraw) {
             int16_t temperature_integer = 0; // Временная переменная для чтения значения датчиков
             float temperature_float = 0; // Временная переменная для расчета значения датчиков
             // Температура на выходе водяного охлаждения (датчик 1)
-            ds18b20read(&PORTC, &DDRC, &PINC, _BV(PC0), NULL, &temperature_integer);
+            ds18b20read(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != water_temperature)/* && !(temperature_integer == 1360 && !water_temperature)*/) {
                 water_temperature = temperature_float;
@@ -267,7 +264,7 @@ void loop(uint8_t *is_redraw) {
                 *is_redraw = 1;
             }
             // Температура трубки связи с атмосферой (датчик 2)
-            ds18b20read(&PORTC, &DDRC, &PINC, _BV(PC1), NULL, &temperature_integer);
+            ds18b20read(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != tsa_temperature)/* && !(temperature_integer == 1360 && !tsa_temperature)*/) {
                 tsa_temperature = temperature_float;
@@ -277,7 +274,7 @@ void loop(uint8_t *is_redraw) {
                 *is_redraw = 1;
             }
             // Температура флегмы в узле отбора (датчик 3)
-            ds18b20read(&PORTC, &DDRC, &PINC, _BV(PC2), NULL, &temperature_integer);
+            ds18b20read(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != reflux_temperature)/* && !(temperature_integer == 1360 && !reflux_temperature)*/) {
                 reflux_temperature = temperature_float;
@@ -287,7 +284,7 @@ void loop(uint8_t *is_redraw) {
                 *is_redraw = 1;
             }
             // Температура в царге (датчик 4)
-            ds18b20read(&PORTD, &DDRD, &PIND, _BV(PD3), NULL, &temperature_integer);
+            ds18b20read(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != tsarga_temperature)/* && !(temperature_integer == 1360 && !tsarga_temperature)*/) {
                 tsarga_temperature = temperature_float;
@@ -297,7 +294,7 @@ void loop(uint8_t *is_redraw) {
                 *is_redraw = 1;
             }
             // Температура в кубе (датчик 5)
-            ds18b20read(&PORTD, &DDRD, &PIND, _BV(PD2), NULL, &temperature_integer);
+            ds18b20read(&HW_SENSOR_5_PORT, &HW_SENSOR_5_DDR, &HW_SENSOR_5_PIN, _BV(HW_SENSOR_5_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != cube_temperature)/* && !(temperature_integer == 1360 && !cube_temperature)*/) {
                 cube_temperature = temperature_float;
@@ -308,11 +305,11 @@ void loop(uint8_t *is_redraw) {
             }
         }
         // Запрашиваем значения температуры у датчиков
-        ds18b20convert(&PORTC, &DDRC, &PINC, _BV(PC0), NULL); // Датчик 1
-        ds18b20convert(&PORTC, &DDRC, &PINC, _BV(PC1), NULL); // Датчик 2
-        ds18b20convert(&PORTC, &DDRC, &PINC, _BV(PC2), NULL); // Датчик 3
-        ds18b20convert(&PORTD, &DDRD, &PIND, _BV(PD3), NULL); // Датчик 4
-        ds18b20convert(&PORTD, &DDRD, &PIND, _BV(PD2), NULL); // Датчик 5
+        ds18b20convert(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL); // Датчик 1
+        ds18b20convert(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL); // Датчик 2
+        ds18b20convert(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL); // Датчик 3
+        ds18b20convert(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL); // Датчик 4
+        ds18b20convert(&HW_SENSOR_5_PORT, &HW_SENSOR_5_DDR, &HW_SENSOR_5_PIN, _BV(HW_SENSOR_5_BIT), NULL); // Датчик 5
         // Запоминаем время опроса
         ds18b20read_time = now_millis;
     }
@@ -320,9 +317,9 @@ void loop(uint8_t *is_redraw) {
     switch(WORKING_MODE) {
         case WM_SETTING: // Параметры
             // Управляем реле
-            PORTC |= _BV(PC3); // Отключаем отбор
-            PORTC |= _BV(PC4); // Отключаем нагрев
-            PORTC |= _BV(PC5); // Отключаем воду
+            HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT); // Отключаем воду
+            HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT); // Отключаем нагрев
+            HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT); // Отключаем отбор
             break;
         #ifdef MANUAL
             case WM_MANUAL: // Ручной режим
@@ -330,9 +327,9 @@ void loop(uint8_t *is_redraw) {
         #endif
         case WM_HEATING: // Нагрев куба
             // Управляем реле
-            PORTC |= _BV(PC3); // Отключаем отбор
-            PORTC &= ~_BV(PC4); // Включаем нагрев
-            PORTC |= _BV(PC5); // Отключаем воду
+            HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT); // Отключаем воду
+            HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT); // Включаем нагрев
+            HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT); // Отключаем отбор
             // Проверяем, не пора ли включить подачу воды
             if(cube_temperature >= ((float) CONFIG.water_cube_temperature)) {
                 set_working_mode(WM_WATERING, GUI_RECTIFICATE_FORM); // Включаем воду
@@ -341,9 +338,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_WATERING: // Включение воды
             // Управляем реле
-            PORTC |= _BV(PC3); // Отключаем отбор
-            PORTC &= ~_BV(PC4); // Включаем нагрев
-            PORTC &= ~_BV(PC5); // Включаем воду
+            HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT); // Включаем воду
+            HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT); // Включаем нагрев
+            HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT); // Отключаем отбор
             // Проверяем, не пора ли начать "работать на себя"
             if(cube_temperature >= ((float) CONFIG.itself_working_temperature)) {
                 set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Режим "работа на себя"
@@ -352,9 +349,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_WORKING: // Работа на себя
             // Управляем реле
-            PORTC |= _BV(PC3); // Отключаем отбор
-            PORTC &= ~_BV(PC4); // Включаем нагрев
-            PORTC &= ~_BV(PC5); // Включаем воду
+            HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT); // Включаем воду
+            HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT); // Включаем нагрев
+            HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT); // Отключаем отбор
             // Если отбора голов еще не было
             if(REFLUX_STATUS == RS_NOTHEAD) {
                 // Начальная "работа на себя" заданное время
@@ -398,9 +395,9 @@ void loop(uint8_t *is_redraw) {
         case WM_GETHEAD: // Отбор голов
         case WM_GETBODY: // Отбор тела
             // Управляем реле
-            PORTC &= ~_BV(PC3); // Включаем отбор
-            PORTC &= ~_BV(PC4); // Включаем нагрев
-            PORTC &= ~_BV(PC5); // Включаем воду
+            HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT); // Включаем воду
+            HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT); // Включаем нагрев
+            HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT); // Включаем отбор
             // Если значения температур датчиков стали больше суммы целевой температуры и дельты
             if((!CONFIG.use_tsarga_sensor || (CONFIG.use_tsarga_sensor && ((tsarga_temperature - target_tsarga_temp) > ((float) CONFIG.delta_tsarga_after / 100 + CONFIG.delta_tsarga_before)))) // Царга
                &&
@@ -429,9 +426,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_CIRCULATE: // Подтверждение начала сбора оборотного спирта
             // Управляем реле
-            PORTC |= _BV(PC3); // Отключаем отбор
-            PORTC &= ~_BV(PC4); // Включаем нагрев
-            PORTC &= ~_BV(PC5); // Включаем воду
+            HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT); // Включаем воду
+            HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT); // Включаем нагрев
+            HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT); // Отключаем отбор
             break;
         case WM_ERROR: // Ошибка
             if((now_millis % 1000) == 0) { // Каждую секунду
@@ -439,9 +436,9 @@ void loop(uint8_t *is_redraw) {
             }
         case WM_DONE: // Готово
             // Управляем реле
-            PORTC |= _BV(PC3); // Отключаем отбор
-            PORTC |= _BV(PC4); // Отключаем нагрев
-            PORTC &= ~_BV(PC5); // Включаем воду
+            HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT); // Включаем воду
+            HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT); // Отключаем нагрев
+            HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT); // Отключаем отбор
             // Сбрасываем флегму в течении заданного времени
             if((now_millis - last_event_time) > ((uint32_t) CONFIG.phlegm_wait_time * 60 * 1000)) {
                 set_working_mode(WM_FINISH, GUI_FINISH_FORM); // Режим "Завершено"
@@ -450,9 +447,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_FINISH: // Завершено
             // Управляем реле
-            PORTC |= _BV(PC3); // Отключаем отбор
-            PORTC |= _BV(PC4); // Отключаем нагрев
-            PORTC |= _BV(PC5); // Отключаем воду
+            HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT); // Отключаем воду
+            HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT); // Отключаем нагрев
+            HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT); // Отключаем отбор
             break;
     }
 

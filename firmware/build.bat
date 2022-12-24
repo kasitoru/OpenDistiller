@@ -35,7 +35,7 @@ ECHO Компиляция libraries/avr-ds18b20...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DONEWIRE_AUTO_CLI -I ../libraries/avr-ds18b20/include/ -c ../libraries/avr-ds18b20/src/*.c"
 
 ECHO Компиляция libraries/u8x8_avr...
-CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DU8X8_USE_PINS -I ../libraries/u8g2/csrc/ -c ../libraries/u8x8_avr/*.c"
+CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DU8X8_USE_PINS -c ../libraries/u8x8_avr/*.c"
 
 ECHO Компиляция libraries/u8g2...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -c ../libraries/u8g2/csrc/*.c"
@@ -61,7 +61,7 @@ IF DEFINED MODULE_UART (
 )
 
 ECHO Компиляция main.c...
-CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% %DEFINES% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -I ../libraries/u8g2/csrc/ -c ../main.c"
+CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% %DEFINES% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -c ../main.c"
 
 ECHO Линковка файлов...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% *.o -o firmware.o"

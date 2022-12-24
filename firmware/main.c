@@ -256,7 +256,7 @@ void loop(uint8_t *is_redraw) {
             // Температура на выходе водяного охлаждения (датчик 1)
             ds18b20read(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != water_temperature)/* && !(temperature_integer == 1360 && !water_temperature)*/) {
+            if((temperature_float != water_temperature) && !(temperature_integer == 1360 && !water_temperature)) {
                 water_temperature = temperature_float;
                 #ifdef UART
                     uart_printf("WATER:%.2f\n", water_temperature);
@@ -266,7 +266,7 @@ void loop(uint8_t *is_redraw) {
             // Температура трубки связи с атмосферой (датчик 2)
             ds18b20read(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != tsa_temperature)/* && !(temperature_integer == 1360 && !tsa_temperature)*/) {
+            if((temperature_float != tsa_temperature) && !(temperature_integer == 1360 && !tsa_temperature)) {
                 tsa_temperature = temperature_float;
                 #ifdef UART
                     uart_printf("TSA:%.2f\n", tsa_temperature);
@@ -276,7 +276,7 @@ void loop(uint8_t *is_redraw) {
             // Температура флегмы в узле отбора (датчик 3)
             ds18b20read(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != reflux_temperature)/* && !(temperature_integer == 1360 && !reflux_temperature)*/) {
+            if((temperature_float != reflux_temperature) && !(temperature_integer == 1360 && !reflux_temperature)) {
                 reflux_temperature = temperature_float;
                 #ifdef UART
                     uart_printf("REFLUX:%.2f\n", reflux_temperature);
@@ -286,7 +286,7 @@ void loop(uint8_t *is_redraw) {
             // Температура в царге (датчик 4)
             ds18b20read(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != tsarga_temperature)/* && !(temperature_integer == 1360 && !tsarga_temperature)*/) {
+            if((temperature_float != tsarga_temperature) && !(temperature_integer == 1360 && !tsarga_temperature)) {
                 tsarga_temperature = temperature_float;
                 #ifdef UART
                     uart_printf("TSARGA:%.2f\n", tsarga_temperature);
@@ -296,7 +296,7 @@ void loop(uint8_t *is_redraw) {
             // Температура в кубе (датчик 5)
             ds18b20read(&HW_SENSOR_5_PORT, &HW_SENSOR_5_DDR, &HW_SENSOR_5_PIN, _BV(HW_SENSOR_5_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != cube_temperature)/* && !(temperature_integer == 1360 && !cube_temperature)*/) {
+            if((temperature_float != cube_temperature) && !(temperature_integer == 1360 && !cube_temperature)) {
                 cube_temperature = temperature_float;
                 #ifdef UART
                     uart_printf("CUBE:%.2f\n", cube_temperature);

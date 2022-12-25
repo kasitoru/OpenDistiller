@@ -151,24 +151,9 @@ int main(void) {
     // Звук
     HW_BUZZER_DDR |= _BV(HW_BUZZER_BIT); // Зуммер
     // Реле
-    HW_RELAY_1_DDR |= _BV(HW_RELAY_1_BIT); // Реле №1
-    #if HW_RELAY_1_INVERTED
-        HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT);
-    #else
-        HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT);
-    #endif
-    HW_RELAY_2_DDR |= _BV(HW_RELAY_2_BIT); // Реле №2
-    #if HW_RELAY_2_INVERTED
-        HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT);
-    #else
-        HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT);
-    #endif
-    HW_RELAY_3_DDR |= _BV(HW_RELAY_3_BIT); // Реле №3
-    #if HW_RELAY_3_INVERTED
-        HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT);
-    #else
-        HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT);
-    #endif
+    HW_RELAY_1_DDR |= _BV(HW_RELAY_1_BIT); ENABLE_RELAY(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Реле №1
+    HW_RELAY_2_DDR |= _BV(HW_RELAY_2_BIT); ENABLE_RELAY(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Реле №2
+    HW_RELAY_3_DDR |= _BV(HW_RELAY_3_BIT); ENABLE_RELAY(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Реле №3
     #ifdef BLUETOOTH
         // Bluetooth модуль
         HW_BLUETOOTH_EN_DDR |= _BV(HW_BLUETOOTH_EN_BIT); // Управление питанием
@@ -332,21 +317,9 @@ void loop(uint8_t *is_redraw) {
     switch(WORKING_MODE) {
         case WM_SETTING: // Параметры
             // Управляем реле
-            #if HW_RELAY_1_INVERTED // Отключаем воду
-                HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT);
-            #else
-                HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT);
-            #endif
-            #if HW_RELAY_2_INVERTED // Отключаем нагрев
-                HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT);
-            #else
-                HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT);
-            #endif
-            #if HW_RELAY_3_INVERTED // Отключаем отбор
-                HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT);
-            #else
-                HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT);
-            #endif
+            ENABLE_RELAY(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Отключаем воду
+            ENABLE_RELAY(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Отключаем нагрев
+            ENABLE_RELAY(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             break;
         #ifdef MANUAL
             case WM_MANUAL: // Ручной режим
@@ -354,21 +327,9 @@ void loop(uint8_t *is_redraw) {
         #endif
         case WM_HEATING: // Нагрев куба
             // Управляем реле
-            #if HW_RELAY_1_INVERTED // Отключаем воду
-                HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT);
-            #else
-                HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT);
-            #endif
-            #if HW_RELAY_2_INVERTED // Включаем нагрев
-                HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT);
-            #else
-                HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT);
-            #endif
-            #if HW_RELAY_3_INVERTED // Отключаем отбор
-                HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT);
-            #else
-                HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT);
-            #endif
+            ENABLE_RELAY(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Отключаем воду
+            ENABLE_RELAY(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
+            ENABLE_RELAY(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             // Проверяем, не пора ли включить подачу воды
             if(cube_temperature >= ((float) CONFIG.water_cube_temperature)) {
                 set_working_mode(WM_WATERING, GUI_RECTIFICATE_FORM); // Включаем воду
@@ -377,21 +338,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_WATERING: // Включение воды
             // Управляем реле
-            #if HW_RELAY_1_INVERTED // Включаем воду
-                HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT);
-            #else
-                HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT);
-            #endif
-            #if HW_RELAY_2_INVERTED // Включаем нагрев
-                HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT);
-            #else
-                HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT);
-            #endif
-            #if HW_RELAY_3_INVERTED // Отключаем отбор
-                HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT);
-            #else
-                HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT);
-            #endif
+            ENABLE_RELAY(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
+            ENABLE_RELAY(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
+            ENABLE_RELAY(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             // Проверяем, не пора ли начать "работать на себя"
             if(cube_temperature >= ((float) CONFIG.itself_working_temperature)) {
                 set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Режим "работа на себя"
@@ -400,21 +349,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_WORKING: // Работа на себя
             // Управляем реле
-            #if HW_RELAY_1_INVERTED // Включаем воду
-                HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT);
-            #else
-                HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT);
-            #endif
-            #if HW_RELAY_2_INVERTED // Включаем нагрев
-                HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT);
-            #else
-                HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT);
-            #endif
-            #if HW_RELAY_3_INVERTED // Отключаем отбор
-                HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT);
-            #else
-                HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT);
-            #endif
+            ENABLE_RELAY(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
+            ENABLE_RELAY(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
+            ENABLE_RELAY(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             // Если отбора голов еще не было
             if(REFLUX_STATUS == RS_NOTHEAD) {
                 // Начальная "работа на себя" заданное время
@@ -458,21 +395,9 @@ void loop(uint8_t *is_redraw) {
         case WM_GETHEAD: // Отбор голов
         case WM_GETBODY: // Отбор тела
             // Управляем реле
-            #if HW_RELAY_1_INVERTED // Включаем воду
-                HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT);
-            #else
-                HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT);
-            #endif
-            #if HW_RELAY_2_INVERTED // Включаем нагрев
-                HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT);
-            #else
-                HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT);
-            #endif
-            #if HW_RELAY_3_INVERTED // Включаем отбор
-                HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT);
-            #else
-                HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT);
-            #endif
+            ENABLE_RELAY(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
+            ENABLE_RELAY(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
+            ENABLE_RELAY(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 1); // Включаем отбор
             // Если значения температур датчиков стали больше суммы целевой температуры и дельты
             if((!CONFIG.use_tsarga_sensor || (CONFIG.use_tsarga_sensor && ((tsarga_temperature - target_tsarga_temp) > ((float) CONFIG.delta_tsarga_after / 100 + CONFIG.delta_tsarga_before)))) // Царга
                &&
@@ -501,21 +426,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_CIRCULATE: // Подтверждение начала сбора оборотного спирта
             // Управляем реле
-            #if HW_RELAY_1_INVERTED // Включаем воду
-                HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT);
-            #else
-                HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT);
-            #endif
-            #if HW_RELAY_2_INVERTED // Включаем нагрев
-                HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT);
-            #else
-                HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT);
-            #endif
-            #if HW_RELAY_3_INVERTED // Отключаем отбор
-                HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT);
-            #else
-                HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT);
-            #endif
+            ENABLE_RELAY(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
+            ENABLE_RELAY(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
+            ENABLE_RELAY(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             break;
         case WM_ERROR: // Ошибка
             if((now_millis % 1000) == 0) { // Каждую секунду
@@ -523,21 +436,9 @@ void loop(uint8_t *is_redraw) {
             }
         case WM_DONE: // Готово
             // Управляем реле
-            #if HW_RELAY_1_INVERTED // Включаем воду
-                HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT);
-            #else
-                HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT);
-            #endif
-            #if HW_RELAY_2_INVERTED // Отключаем нагрев
-                HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT);
-            #else
-                HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT);
-            #endif
-            #if HW_RELAY_3_INVERTED // Отключаем отбор
-                HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT);
-            #else
-                HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT);
-            #endif
+            ENABLE_RELAY(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
+            ENABLE_RELAY(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Отключаем нагрев
+            ENABLE_RELAY(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             // Сбрасываем флегму в течении заданного времени
             if((now_millis - last_event_time) > ((uint32_t) CONFIG.phlegm_wait_time * 60 * 1000)) {
                 set_working_mode(WM_FINISH, GUI_FINISH_FORM); // Режим "Завершено"
@@ -546,21 +447,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_FINISH: // Завершено
             // Управляем реле
-            #if HW_RELAY_1_INVERTED // Отключаем воду
-                HW_RELAY_1_PORT |= _BV(HW_RELAY_1_BIT);
-            #else
-                HW_RELAY_1_PORT &= ~_BV(HW_RELAY_1_BIT);
-            #endif
-            #if HW_RELAY_2_INVERTED // Отключаем нагрев
-                HW_RELAY_2_PORT |= _BV(HW_RELAY_2_BIT);
-            #else
-                HW_RELAY_2_PORT &= ~_BV(HW_RELAY_2_BIT);
-            #endif
-            #if HW_RELAY_3_INVERTED // Отключаем отбор
-                HW_RELAY_3_PORT |= _BV(HW_RELAY_3_BIT);
-            #else
-                HW_RELAY_3_PORT &= ~_BV(HW_RELAY_3_BIT);
-            #endif
+            ENABLE_RELAY(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Отключаем воду
+            ENABLE_RELAY(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Отключаем нагрев
+            ENABLE_RELAY(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             break;
     }
 

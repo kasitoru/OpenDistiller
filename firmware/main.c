@@ -185,7 +185,7 @@ int main(void) {
         CONFIG.tsa_max_temperature = 40; // Максимальная температура ТСА (от 40 до 60)
         CONFIG.water_protection = 1; // Включить защиту по температуре воды (0 = нет, 1 = да)
         CONFIG.water_max_temperature = 60; // Максимальная температура воды (от 40 до 60)
-        CONFIG.phlegm_wait_time = 1; // Время сброса флегмы в минутах (от 1 до 10) // FIXME
+        CONFIG.phlegm_wait_time = 3; // Время сброса флегмы в минутах (от 1 до 10)
         #ifdef BLUETOOTH
             CONFIG.use_bluetooth = 0; // Использовать Bluetooth модуль (0 = нет, 1 = да)
         #endif

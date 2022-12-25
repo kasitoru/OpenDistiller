@@ -214,11 +214,7 @@ void loop(uint8_t *is_redraw) {
     #endif
     #ifdef BLUETOOTH
         // Управление Bluetooth модулем
-        if(CONFIG.use_bluetooth) {
-            HW_BLUETOOTH_EN_PORT |= _BV(HW_BLUETOOTH_EN_BIT); // Включаем
-        } else {
-            HW_BLUETOOTH_EN_PORT &= ~_BV(HW_BLUETOOTH_EN_BIT); // Отключаем
-        }
+        SET_PIN_STATE(HW_BLUETOOTH_EN_PORT, HW_BLUETOOTH_EN_BIT, 0, CONFIG.use_bluetooth);
     #endif
     // Опрос кнопок
     switch(u8x8_GetMenuEvent(u8g2_GetU8x8(&u8g2))) {

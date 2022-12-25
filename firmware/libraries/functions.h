@@ -12,6 +12,6 @@ uint32_t get_millis();
 uint8_t crc8(uint8_t *buffer, uint8_t size);
 void restart_atmega();
 
-#define ENABLE_RELAY(port, bit, inverted, state) (((!!inverted) != state) ? (port |= _BV(bit)) : (port &= ~_BV(bit)))
+#define SET_PIN_STATE(port, bit, inverted, state) (((!!inverted) != state) ? (port |= _BV(bit)) : (port &= ~_BV(bit)))
 
 #endif /* FUNCTIONS_H_ */

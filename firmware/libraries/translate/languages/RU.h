@@ -34,7 +34,6 @@
 
 // Отбор спирта
 #define I18N_SELECTION_DELTA          "Дельта отбора:"
-#define I18N_DECIMAL_SEPARATOR        "."
 #define I18N_WORKING_INTERIM_TIME     "Восстановление (мин):"
 #define I18N_OK_BUTTON                "Ок"
 

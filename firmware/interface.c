@@ -127,7 +127,7 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
 uint8_t mui_temp_value(mui_t *ui, uint8_t msg) {
     switch(msg) {
         case MUIF_MSG_DRAW:
-            float temperature = 0; // FIXME: избавиться от float
+            float temperature = 0;
             // Определяем, значение с какого именно датчика необходимо отобразить
             switch(ui->arg) {
                 case TEMP_VALUE_WATER:  temperature = ((float) water_temperature / 16);  break;
@@ -355,6 +355,35 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
     return mui_u8g2_btn_goto_w2_fi(ui, msg); // Вызываем нативный callback
 }
 
+// Поле ввода числового значения температуры (int16_t)
+struct mui_u8g2_i16_min_max_struct { int16_t *value; int16_t min; int16_t max; } MUI_PROGMEM;
+typedef const struct mui_u8g2_i16_min_max_struct mui_u8g2_i16_min_max_t;
+#define MUIF_U8G2_I16_MIN_MAX(id, valptr, min, max, muif) MUIF(id, MUIF_CFLAG_IS_CURSOR_SELECTABLE, (void *)((mui_u8g2_i16_min_max_t []) {{ (valptr) MUI_U8G2_COMMA (min) MUI_U8G2_COMMA (max)}}), (muif))
+uint8_t mui_u8g2_i16_min_max_wm_mse_pi(mui_t *ui, uint8_t msg) {
+    mui_u8g2_i16_min_max_t *vmm = (mui_u8g2_i16_min_max_t *) muif_get_data(ui->uif);
+    int16_t *value = ((int16_t *) mui_pgm_wread(&((vmm)->value)));
+    int16_t min = mui_pgm_read(&((vmm)->min));
+    int16_t max = mui_pgm_read(&((vmm)->max));
+    switch(msg) {
+        case MUIF_MSG_DRAW:
+            if(*value > max) { *value = max; }
+            if(*value <= min) { *value = min; }
+            char buffer[MUI_MAX_TEXT_LEN + 1];
+            uint8_t length = snprintf(buffer, (sizeof(buffer) / sizeof(*buffer)), FPN_FORMAT, FPN_GBD(*value), FPN_GAD(*value));
+            mui_u8g2_draw_button_pi(ui, length, 1, buffer);
+            break;
+        case MUIF_MSG_VALUE_INCREMENT:
+            (*value)++;
+            if(*value > max) { *value = min; }
+            break;
+        case MUIF_MSG_VALUE_DECREMENT:
+            if(*value > min) { (*value)--; }
+            else { *value = max; }
+            break;
+    }
+    return 0;
+}
+
 // Устанавливаем callback`и элементов интерфейса
 static const muif_t muif_list[] MUI_PROGMEM = {
     MUIF_STYLE(0, mui_style_font_normal), // Обычный шрифт
@@ -374,8 +403,7 @@ static const muif_t muif_list[] MUI_PROGMEM = {
     MUIF_U8G2_U8_MIN_MAX("WT", &CONFIG.itself_working_temperature, 60, 80, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура начала "работы на себя"
     MUIF_U8G2_U8_MIN_MAX("IW", &CONFIG.itself_working_initial_time, 10, 60, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: длительность "работы на себя" (мин)
     // Отбор спирта
-    MUIF_U8G2_U8_MIN_MAX("TB", &CONFIG.target_delta_before, 0, 9, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (до запятой) // FIXME: использовать int16_t
-    MUIF_U8G2_U8_MIN_MAX("TA", &CONFIG.target_delta_after, 0, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (после запятой) // FIXME: использовать int16_t
+    MUIF_U8G2_I16_MIN_MAX("TD", &CONFIG.target_temperature_delta, 1 /* 0.0625 */, 159 /* 9.9375 */, mui_u8g2_i16_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги
     MUIF_U8G2_U8_MIN_MAX("RT", &CONFIG.target_recovery_time, 1, 30, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время восстановления (мин)
     // Безопасность
     MUIF_VARIABLE("SP", &CONFIG.sensors_protection, mui_u8g2_u8_chkbox_wm_pi), // Чекбокс: включить контроль работоспособности датчиков
@@ -440,9 +468,7 @@ static const fds_t fds_data[] MUI_PROGMEM =
     MUI_AUX("HL")
     MUI_STYLE(0)
     _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_LEFT, I18N_SELECTION_DELTA)
-    MUI_XY("TB", 105, 22)
-    _MUI_XYAT("TL", 110, 22, TEXTLABEL_ALIGN_LEFT, I18N_DECIMAL_SEPARATOR)
-    MUI_XY("TA", 115, 22)
+    MUI_XY("TD", 95, 22)
     _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_LEFT, I18N_WORKING_INTERIM_TIME)
     MUI_XY("RT", 115, 31)
     _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)

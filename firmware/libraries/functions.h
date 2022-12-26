@@ -14,4 +14,11 @@ void restart_atmega();
 
 #define SET_PIN_STATE(port, bit, inverted, state) (((!!inverted) != state) ? (port |= _BV(bit)) : (port &= ~_BV(bit)))
 
+// Число с фиксированной запятой (int16_t)
+#define FPN_FORMAT "%i.%04i" // Формат вывода числа для printf
+#define FPN_GBD(n) (n >> 4) // Получить часть числа до запятой
+#define FPN_GAD(n) ((n & 0xF) * 625) // Получить часть числа после запятой
+#define FPN_SBD(v) (v << 4); // Установить часть числа до запятой
+#define FPN_SAD(v) (v / 625); // Установить часть числа после запятой
+
 #endif /* FUNCTIONS_H_ */

@@ -8,9 +8,9 @@
 
 #define GUI_NONE_FORM        0 // Зарезервировано
 #define GUI_SETTING_FORM     1 // Параметры ректификации
-#define GUI_SENSORS_FORM     2 // Датчики отбора
+#define GUI_CUBETEMP_FORM    2 // Температура в кубе
 #define GUI_WORKING_FORM     3 // Работа на себя
-#define GUI_CUBETEMP_FORM    4 // Температура в кубе
+#define GUI_GETALCOHOL_FORM  4 // Отбор спирта
 #define GUI_SAFETY_FORM      5 // Безопасность
 #define GUI_BLUETOOTH_FORM   6 // Bluetooth модуль
 #define GUI_RESET_FORM       7 // Сброс настроек
@@ -81,16 +81,16 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
         case MUIF_MSG_DRAW:
             // Выбираем нужный текст, в зависимости от текущей формы
             switch(mui_GetCurrentFormId(ui)) {
-                case GUI_SETTING_FORM:   strcpy(ui->text, I18N_SETTING_MENU);   break;
-                case GUI_SENSORS_FORM:   strcpy(ui->text, I18N_SENSORS_MENU);   break;
-                case GUI_WORKING_FORM:   strcpy(ui->text, I18N_WORKING_MENU);   break;
-                case GUI_CUBETEMP_FORM:  strcpy(ui->text, I18N_CUBETEMP_MENU);  break;
-                case GUI_SAFETY_FORM:    strcpy(ui->text, I18N_SAFETY_MENU);    break;
+                case GUI_SETTING_FORM:    strcpy(ui->text, I18N_SETTING_MENU);    break;
+                case GUI_CUBETEMP_FORM:   strcpy(ui->text, I18N_CUBETEMP_MENU);   break;
+                case GUI_WORKING_FORM:    strcpy(ui->text, I18N_WORKING_MENU);    break;
+                case GUI_GETALCOHOL_FORM: strcpy(ui->text, I18N_GETALCOHOL_MENU); break;
+                case GUI_SAFETY_FORM:     strcpy(ui->text, I18N_SAFETY_MENU);     break;
                 #ifdef BLUETOOTH
                     case GUI_BLUETOOTH_FORM: strcpy(ui->text, I18N_BLUETOOTH_MENU); break;
                 #endif
-                case GUI_RESET_FORM:     strcpy(ui->text, I18N_RESET_MENU);     break;
-                case GUI_ABOUT_FORM:     strcpy(ui->text, I18N_ABOUT_MENU);     break;
+                case GUI_RESET_FORM:      strcpy(ui->text, I18N_RESET_MENU);      break;
+                case GUI_ABOUT_FORM:      strcpy(ui->text, I18N_ABOUT_MENU);      break;
                 default:
                     // Текст в зависимости от режима работы
                     switch(WORKING_MODE) {
@@ -267,10 +267,10 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
                         // Запоминаем время старта
                         rect_start_time = now_millis;
                     }
-                case GUI_SENSORS_FORM:   // Датчики отбора
-                case GUI_WORKING_FORM:   // Время "работы на себя"
-                case GUI_CUBETEMP_FORM:  // Температура в кубе
-                case GUI_SAFETY_FORM:    // Безопасность
+                case GUI_CUBETEMP_FORM:   // Температура в кубе
+                case GUI_WORKING_FORM:    // Работа на себя
+                case GUI_GETALCOHOL_FORM: // Отбор спирта
+                case GUI_SAFETY_FORM:     // Безопасность
                 #ifdef BLUETOOTH
                     case GUI_BLUETOOTH_FORM: // Bluetooth модуль
                 #endif
@@ -357,17 +357,17 @@ static const muif_t muif_list[] MUI_PROGMEM = {
     // Параметры ректификации
     MUIF_RO("ML", mui_u8g2_goto_data), // Список элементов меню параметров
     MUIF_BUTTON("MI", mui_u8g2_goto_form_w1_pi), // Выбор текущего элемента меню
-    // Датчики отбора
-    MUIF_U8G2_U8_MIN_MAX("TB", &CONFIG.target_delta_before, 0, 9, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (до запятой)
-    MUIF_U8G2_U8_MIN_MAX("TA", &CONFIG.target_delta_after, 0, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (после запятой)
-    // Работа на себя
-    MUIF_U8G2_U8_MIN_MAX("WT", &CONFIG.itself_working_temperature, 60, 80, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура начала "работы на себя"
-    MUIF_U8G2_U8_MIN_MAX("IW", &CONFIG.itself_working_initial_time, 10, 60, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время начальной "работы на себя" (мин)
-    MUIF_U8G2_U8_MIN_MAX("RT", &CONFIG.itself_working_interim_time, 1, 30, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время промежуточной "работы на себя" (мин)
     // Температура в кубе
     MUIF_U8G2_U8_MIN_MAX("IC", &CONFIG.water_cube_temperature, 60, 80, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура старта подачи воды
     MUIF_U8G2_U8_MIN_MAX("EC", &CONFIG.ethanol_cube_temperature, 85, 110, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: макс. температура для товарного спирта
     MUIF_U8G2_U8_MIN_MAX("FC", &CONFIG.final_cube_temperature, 85, 110, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура окончания работы
+    // Работа на себя
+    MUIF_U8G2_U8_MIN_MAX("WT", &CONFIG.itself_working_temperature, 60, 80, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура начала "работы на себя"
+    MUIF_U8G2_U8_MIN_MAX("IW", &CONFIG.itself_working_initial_time, 10, 60, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: длительность "работы на себя" (мин)
+    // Отбор спирта
+    MUIF_U8G2_U8_MIN_MAX("TB", &CONFIG.target_delta_before, 0, 9, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (до запятой)
+    MUIF_U8G2_U8_MIN_MAX("TA", &CONFIG.target_delta_after, 0, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (после запятой)
+    MUIF_U8G2_U8_MIN_MAX("RT", &CONFIG.target_recovery_time, 1, 30, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время восстановления (мин)
     // Безопасность
     MUIF_VARIABLE("SP", &CONFIG.sensors_protection, mui_u8g2_u8_chkbox_wm_pi), // Чекбокс: включить контроль работоспособности датчиков
     MUIF_VARIABLE("TP", &CONFIG.tsa_protection, mui_u8g2_u8_chkbox_wm_pi), // Чекбокс: включить защиту по температуре ТСА
@@ -391,44 +391,22 @@ static const fds_t fds_data[] MUI_PROGMEM =
     MUI_AUX("HL")
     MUI_STYLE(0)
     MUI_DATA("ML",
-        MUI_100 I18N_START_MENU "|"     /* GUI_RECTIFICATE_FORM */
-        MUI_2   I18N_SENSORS_MENU "|"   /* GUI_SENSORS_FORM */
-        MUI_3   I18N_WORKING_MENU "|"   /* GUI_WORKING_FORM */
-        MUI_4   I18N_CUBETEMP_MENU "|"  /* GUI_CUBETEMP_FORM */
-        MUI_5   I18N_SAFETY_MENU "|"    /* GUI_SAFETY_FORM */
+        MUI_100 I18N_START_MENU "|"      /* GUI_RECTIFICATE_FORM */
+        MUI_2   I18N_CUBETEMP_MENU "|"   /* GUI_CUBETEMP_FORM */
+        MUI_3   I18N_WORKING_MENU "|"    /* GUI_WORKING_FORM */
+        MUI_4   I18N_GETALCOHOL_MENU "|" /* GUI_GETALCOHOL_FORM */
+        MUI_5   I18N_SAFETY_MENU "|"     /* GUI_SAFETY_FORM */
         #ifdef BLUETOOTH
             MUI_6 I18N_BLUETOOTH_MENU "|" /* GUI_BLUETOOTH_FORM */
         #endif
-        MUI_7   I18N_RESET_MENU "|"     /* GUI_RESET_FORM */
-        MUI_8   I18N_ABOUT_MENU "|"     /* GUI_ABOUT_FORM */
+        MUI_7   I18N_RESET_MENU "|"      /* GUI_RESET_FORM */
+        MUI_8   I18N_ABOUT_MENU "|"      /* GUI_ABOUT_FORM */
     )
     _MUI_XYA("MI", 5, 22, 0)
     _MUI_XYA("MI", 5, 31, 1)
     _MUI_XYA("MI", 5, 40, 2)
     _MUI_XYA("MI", 5, 49, 3)
     _MUI_XYA("MI", 5, 58, 4)
-    
-    // Датчики отбора
-    _MUI_FORM(GUI_SENSORS_FORM)
-    MUI_AUX("HL")
-    MUI_STYLE(0)
-    _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_LEFT, I18N_SELECTION_DELTA)
-    MUI_XY("TB", 105, 22)
-    _MUI_XYAT("TL", 110, 22, TEXTLABEL_ALIGN_LEFT, I18N_DECIMAL_SEPARATOR)
-    MUI_XY("TA", 115, 22)
-    _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
-    
-    // Работа на себя
-    _MUI_FORM(GUI_WORKING_FORM)
-    MUI_AUX("HL")
-    MUI_STYLE(0)
-    _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_LEFT, I18N_WORKING_TEMPERATURE)
-    MUI_XY("WT", 115, 22)
-    _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_LEFT, I18N_WORKING_INITIAL_TIME)
-    MUI_XY("IW", 115, 31)
-    _MUI_XYAT("TL", 5, 40, TEXTLABEL_ALIGN_LEFT, I18N_WORKING_INTERIM_TIME)
-    MUI_XY("RT", 115, 40)
-    _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
     
     // Температура в кубе
     _MUI_FORM(GUI_CUBETEMP_FORM)
@@ -440,6 +418,28 @@ static const fds_t fds_data[] MUI_PROGMEM =
     MUI_XY("EC", 110, 31)
     _MUI_XYAT("TL", 5, 40, TEXTLABEL_ALIGN_LEFT, I18N_FINAL_CUBE_TEMPERATURE)
     MUI_XY("FC", 110, 40)
+    _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
+    
+    // Работа на себя
+    _MUI_FORM(GUI_WORKING_FORM)
+    MUI_AUX("HL")
+    MUI_STYLE(0)
+    _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_LEFT, I18N_WORKING_TEMPERATURE)
+    MUI_XY("WT", 115, 22)
+    _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_LEFT, I18N_WORKING_INITIAL_TIME)
+    MUI_XY("IW", 115, 31)
+    _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
+    
+    // Отбор спирта
+    _MUI_FORM(GUI_GETALCOHOL_FORM)
+    MUI_AUX("HL")
+    MUI_STYLE(0)
+    _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_LEFT, I18N_SELECTION_DELTA)
+    MUI_XY("TB", 105, 22)
+    _MUI_XYAT("TL", 110, 22, TEXTLABEL_ALIGN_LEFT, I18N_DECIMAL_SEPARATOR)
+    MUI_XY("TA", 115, 22)
+    _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_LEFT, I18N_WORKING_INTERIM_TIME)
+    MUI_XY("RT", 115, 31)
     _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
     
     // Безопасность

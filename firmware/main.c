@@ -44,14 +44,14 @@ void loop(uint8_t *is_redraw); // Основной цикл
 
 // Параметры ректификации
 typedef struct {
-    uint8_t target_delta_before; // Дельта целевой температуры (до запятой)
-    uint8_t target_delta_after; // Дельта целевой температуры (после запятой)
-    uint8_t itself_working_temperature; // Температура начала "работы на себя"
-    uint8_t itself_working_initial_time; // Время начальной "работы на себя" (мин)
-    uint8_t itself_working_interim_time; // Время промежуточной "работы на себя" (мин)
     uint8_t water_cube_temperature; // Температура старта подачи воды
     uint8_t ethanol_cube_temperature; // Максимальная температура для товарного спирта
     uint8_t final_cube_temperature; // Температура окончания работы
+    uint8_t itself_working_temperature; // Температура начала "работы на себя"
+    uint8_t itself_working_initial_time; // Длительность "работы на себя" (мин)
+    uint8_t target_delta_before; // Дельта целевой температуры (до запятой)
+    uint8_t target_delta_after; // Дельта целевой температуры (после запятой)
+    uint8_t target_recovery_time; // Время восстановления (мин)
     uint8_t sensors_protection; // Включить контроль работоспособности датчиков
     uint8_t tsa_protection; // Включить защиту по температуре ТСА
     uint8_t tsa_max_temperature; // Максимальная температура ТСА
@@ -158,14 +158,14 @@ int main(void) {
     eeprom_read_block(&CONFIG, 0, sizeof(CONFIG)); // Получаем данные
     if(crc8((uint8_t *) &CONFIG, sizeof(CONFIG) - 1) != CONFIG.crc) { // Если контрольная сумма не совпадает
         // Устанавливаем настройки по-умолчанию
-        CONFIG.target_delta_before = 0; // Дельта целевой температуры до запятой (от 0 до 9)
-        CONFIG.target_delta_after = 10; // Дельта целевой температуры после запятой (от 0 до 99)
-        CONFIG.itself_working_temperature = 70; // Температура начала "работы на себя" (от 60 до 80)
-        CONFIG.itself_working_initial_time = 30; // Время начальной "работы на себя" в минутах (от 10 до 60)
-        CONFIG.itself_working_interim_time = 1; // Время промежуточной "работы на себя" в минутах (от 1 до 30)
         CONFIG.water_cube_temperature = 75; // Температура старта подачи воды (от 60 до 80)
         CONFIG.ethanol_cube_temperature = 95; // Максимальная температура для товарного спирта (от 85 до 110)
         CONFIG.final_cube_temperature = 100; // Температура окончания работы (от 85 до 110)
+        CONFIG.itself_working_temperature = 70; // Температура начала "работы на себя" (от 60 до 80)
+        CONFIG.itself_working_initial_time = 30; // Длительность "работы на себя" в минутах (от 10 до 60)
+        CONFIG.target_delta_before = 0; // Дельта целевой температуры до запятой (от 0 до 9)
+        CONFIG.target_delta_after = 10; // Дельта целевой температуры после запятой (от 0 до 99)
+        CONFIG.target_recovery_time = 1; // Время восстановления в минутах (от 1 до 30)
         CONFIG.sensors_protection = 0; // Включить контроль работоспособности датчиков (0 = нет, 1 = да)
         CONFIG.tsa_protection = 1; // Включить защиту по температуре ТСА (0 = нет, 1 = да)
         CONFIG.tsa_max_temperature = 40; // Максимальная температура ТСА (от 40 до 60)
@@ -329,7 +329,7 @@ void loop(uint8_t *is_redraw) {
                     *is_redraw = 1; // Нужна перерисовка интерфейса
                 }
             } else { // Отбор голов или тела в процессе, но сейчас нужна промежуточная "поработать на себя"
-                if((now_millis - last_event_time) > ((uint32_t) CONFIG.itself_working_interim_time * 60 * 1000)) { // Если за заданное время
+                if((now_millis - last_event_time) > ((uint32_t) CONFIG.target_recovery_time * 60 * 1000)) { // Если за заданное время
                     // Если значение температуры датчика изменилось не более суммы целевой температуры и дельты
                     if((tsarga_temperature - target_temperature) <= ((float) CONFIG.target_delta_after / 100 + CONFIG.target_delta_before)) {
                         // Если отбор голов в процессе

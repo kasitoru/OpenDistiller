@@ -15,28 +15,28 @@
 // Параметры ректификации
 #define I18N_SETTING_MENU             "Параметры"
 #define I18N_START_MENU               "СТАРТ"
-#define I18N_SENSORS_MENU             "Датчики отбора"
-#define I18N_WORKING_MENU             "Работа на себя"
 #define I18N_CUBETEMP_MENU            "Температура в кубе"
+#define I18N_WORKING_MENU             "Работа на себя"
+#define I18N_GETALCOHOL_MENU          "Отбор спирта"
 #define I18N_SAFETY_MENU              "Безопасность"
 #define I18N_BLUETOOTH_MENU           "Bluetooth модуль"
 #define I18N_RESET_MENU               "Сброс настроек"
 #define I18N_ABOUT_MENU               "О проекте..."
 
-// Датчики отбора
-#define I18N_SELECTION_DELTA          "Дельта отбора:"
-#define I18N_DECIMAL_SEPARATOR        "."
-#define I18N_OK_BUTTON                "Ок"
-
-// Работа на себя
-#define I18N_WORKING_TEMPERATURE      "Темп.старта (в царге):"
-#define I18N_WORKING_INITIAL_TIME     "Начальная длит.(мин):"
-#define I18N_WORKING_INTERIM_TIME     "Промежуточная (мин):"
-
 // Температура в кубе
 #define I18N_WATER_CUBE_TEMPERATURE   "Старт подачи воды:"
 #define I18N_ETHANOL_CUBE_TEMPERATURE "Товарный спирт до:"
 #define I18N_FINAL_CUBE_TEMPERATURE   "Окончание работы:"
+
+// Работа на себя
+#define I18N_WORKING_TEMPERATURE      "Темп.старта (в царге):"
+#define I18N_WORKING_INITIAL_TIME     "Длительность (мин):"
+
+// Отбор спирта
+#define I18N_SELECTION_DELTA          "Дельта отбора:"
+#define I18N_DECIMAL_SEPARATOR        "."
+#define I18N_WORKING_INTERIM_TIME     "Восстановление (мин):"
+#define I18N_OK_BUTTON                "Ок"
 
 // Безопасность
 #define I18N_SENSORS_PROTECTION       "Контроль датчиков"

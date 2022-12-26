@@ -32,7 +32,7 @@ FOR %%M IN ("%MODULES:,=" "%") DO (
 SET "CCFLAGS=-Wall -Os -mmcu=atmega328p -DF_CPU=16000000L -ffunction-sections -fdata-sections -Wl,--gc-sections,-u,vfprintf -lprintf_flt --param=min-pagesize=0"
 
 ECHO Компиляция libraries/avr-ds18b20...
-CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DONEWIRE_AUTO_CLI -I ../libraries/avr-ds18b20/include/ -c ../libraries/avr-ds18b20/src/*.c"
+CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -I ../libraries/avr-ds18b20/include/ -c ../libraries/avr-ds18b20/src/*.c"
 
 ECHO Компиляция libraries/u8x8_avr...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DU8X8_USE_PINS -c ../libraries/u8x8_avr/*.c"

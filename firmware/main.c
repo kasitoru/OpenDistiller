@@ -24,11 +24,11 @@
 u8g2_t u8g2; // Дисплей
 mui_t mui; // Интерфейс
 
-float water_temperature = 0; // Температура на выходе водяного охлаждения (датчик 1)
-float tsa_temperature = 0; // Температура трубки связи с атмосферой (датчик 2)
-float tsarga_temperature = 0; // Температура в царге (датчик 3)
-float cube_temperature = 0; // Температура в кубе (датчик 4)
-float target_temperature = 0; // Целевая температура царги
+int16_t water_temperature = 0; // Температура на выходе водяного охлаждения (датчик 1)
+int16_t tsa_temperature = 0; // Температура трубки связи с атмосферой (датчик 2)
+int16_t tsarga_temperature = 0; // Температура в царге (датчик 3)
+int16_t cube_temperature = 0; // Температура в кубе (датчик 4)
+int16_t target_temperature = 0; // Целевая температура царги
 
 uint32_t now_millis = 0; // Текущее время с начала включения
 uint32_t rect_start_time = 0; // Время начала ректификации
@@ -43,8 +43,8 @@ typedef struct {
     uint8_t final_cube_temperature; // Температура окончания работы
     uint8_t itself_working_temperature; // Температура начала "работы на себя"
     uint8_t itself_working_initial_time; // Длительность "работы на себя" (мин)
-    uint8_t target_delta_before; // Дельта целевой температуры (до запятой)
-    uint8_t target_delta_after; // Дельта целевой температуры (после запятой)
+    uint8_t target_delta_before; // Дельта целевой температуры (до запятой) // FIXME: использовать int16_t
+    uint8_t target_delta_after; // Дельта целевой температуры (после запятой) // FIXME: использовать int16_t
     uint8_t target_recovery_time; // Время восстановления (мин)
     uint8_t sensors_protection; // Включить контроль работоспособности датчиков
     uint8_t tsa_protection; // Включить защиту по температуре ТСА
@@ -208,38 +208,33 @@ void loop(uint8_t *is_redraw) {
     // Получаем данные с датчиков температуры
     if((now_millis - ds18b20read_time) > ((uint32_t) 1 * 1000)) { // Если с момента последнего опроса прошло более 1с
         if(ds18b20read_time > 0) { // Если был хотя бы один запрос значений, считываем температуру с датчиков
-            int16_t temperature_integer = 0; // Временная переменная для чтения значения датчиков
-            float temperature_float = 0; // Временная переменная для расчета значения датчиков
+            int16_t read_temperature = 0; // Временная переменная для чтения значения датчиков
             // Температура на выходе водяного охлаждения (датчик 1)
-            ds18b20read(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL, &temperature_integer);
-            temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != water_temperature) && !(temperature_integer == 1360 && !water_temperature)) {
-                water_temperature = temperature_float;
-                uart_printf("WATER:%.2f\n", water_temperature);
+            ds18b20read(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL, &read_temperature);
+            if((read_temperature != water_temperature) && !(read_temperature == 1360 && !water_temperature)) {
+                water_temperature = read_temperature;
+                uart_printf("WATER:%.2f\n", ((float) water_temperature / 16)); // FIXME: избавиться от float
                 *is_redraw = 1;
             }
             // Температура трубки связи с атмосферой (датчик 2)
-            ds18b20read(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL, &temperature_integer);
-            temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != tsa_temperature) && !(temperature_integer == 1360 && !tsa_temperature)) {
-                tsa_temperature = temperature_float;
-                uart_printf("TSA:%.2f\n", tsa_temperature);
+            ds18b20read(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL, &read_temperature);
+            if((read_temperature != tsa_temperature) && !(read_temperature == 1360 && !tsa_temperature)) {
+                tsa_temperature = read_temperature;
+                uart_printf("TSA:%.2f\n", ((float) tsa_temperature / 16)); // FIXME: избавиться от float
                 *is_redraw = 1;
             }
             // Температура в царге (датчик 3)
-            ds18b20read(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, &temperature_integer);
-            temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != tsarga_temperature) && !(temperature_integer == 1360 && !tsarga_temperature)) {
-                tsarga_temperature = temperature_float;
-                uart_printf("TSARGA:%.2f\n", tsarga_temperature);
+            ds18b20read(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, &read_temperature);
+            if((read_temperature != tsarga_temperature) && !(read_temperature == 1360 && !tsarga_temperature)) {
+                tsarga_temperature = read_temperature;
+                uart_printf("TSARGA:%.2f\n", ((float) tsarga_temperature / 16)); // FIXME: избавиться от float
                 *is_redraw = 1;
             }
             // Температура в кубе (датчик 4)
-            ds18b20read(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, &temperature_integer);
-            temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != cube_temperature) && !(temperature_integer == 1360 && !cube_temperature)) {
-                cube_temperature = temperature_float;
-                uart_printf("CUBE:%.2f\n", cube_temperature);
+            ds18b20read(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, &read_temperature);
+            if((read_temperature != cube_temperature) && !(read_temperature == 1360 && !cube_temperature)) {
+                cube_temperature = read_temperature;
+                uart_printf("CUBE:%.2f\n", ((float) cube_temperature / 16)); // FIXME: избавиться от float
                 *is_redraw = 1;
             }
         }
@@ -265,7 +260,7 @@ void loop(uint8_t *is_redraw) {
             SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
             SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             // Проверяем, не пора ли включить подачу воды
-            if(cube_temperature >= ((float) CONFIG.water_cube_temperature)) {
+            if(((float) cube_temperature / 16) >= ((float) CONFIG.water_cube_temperature)) { // FIXME: избавиться от float
                 set_working_mode(WM_WATERING, GUI_RECTIFICATE_FORM); // Включаем воду
                 *is_redraw = 1; // Нужна перерисовка интерфейса
             }
@@ -276,7 +271,7 @@ void loop(uint8_t *is_redraw) {
             SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
             SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             // Проверяем, не пора ли начать "работать на себя"
-            if(tsarga_temperature >= ((float) CONFIG.itself_working_temperature)) {
+            if(((float) tsarga_temperature / 16) >= ((float) CONFIG.itself_working_temperature)) { // FIXME: избавиться от float
                 set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Режим "работа на себя"
                 *is_redraw = 1; // Нужна перерисовка интерфейса
             }
@@ -298,7 +293,7 @@ void loop(uint8_t *is_redraw) {
             } else { // Отбор голов или тела в процессе, но сейчас нужна промежуточная "поработать на себя"
                 if((now_millis - last_event_time) > ((uint32_t) CONFIG.target_recovery_time * 60 * 1000)) { // Если за заданное время
                     // Если значение температуры датчика изменилось не более суммы целевой температуры и дельты
-                    if((tsarga_temperature - target_temperature) <= ((float) CONFIG.target_delta_after / 100 + CONFIG.target_delta_before)) {
+                    if(((float) (tsarga_temperature - target_temperature) / 16) <= ((float) CONFIG.target_delta_after / 100 + CONFIG.target_delta_before)) { // FIXME: избавиться от float
                         // Если отбор голов в процессе
                         if(REFLUX_STATUS == RS_YESHEAD) {
                             set_working_mode(WM_GETHEAD, GUI_RECTIFICATE_FORM); // Возвращаемся к отбору голов
@@ -327,14 +322,14 @@ void loop(uint8_t *is_redraw) {
             SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
             SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 1); // Включаем отбор
             // Если значение температуры датчика стало больше суммы целевой температуры и дельты
-            if((tsarga_temperature - target_temperature) > ((float) CONFIG.target_delta_after / 100 + CONFIG.target_delta_before)) {
+            if(((float) (tsarga_temperature - target_temperature) / 16) > ((float) CONFIG.target_delta_after / 100 + CONFIG.target_delta_before)) { // FIXME: избавиться от float
                 set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Начинаем "работать на себя"
                 *is_redraw = 1; // Нужна перерисовка интерфейса
             }
             // Во время отбора тела
             if(REFLUX_STATUS == RS_YESBODY) {
                 // Если пора завершить отбор товарного спирта
-                if(cube_temperature >= CONFIG.ethanol_cube_temperature) {
+                if(((float) cube_temperature / 16) >= CONFIG.ethanol_cube_temperature) { // FIXME: избавиться от float
                     set_working_mode(WM_CIRCULATE, GUI_CIRCULATE_FORM); // Подтверждение сбора оборотки
                     REFLUX_STATUS = RS_NOTCIRC; // Но сам отбор пока не начинаем
                     *is_redraw = 1; // Нужна перерисовка интерфейса
@@ -343,7 +338,7 @@ void loop(uint8_t *is_redraw) {
             // Во время отбора оборотного спирта
             if(REFLUX_STATUS == RS_YESCIRC) {
                 // Если пора завершать ректификацию
-                if(cube_temperature >= CONFIG.final_cube_temperature) {
+                if(((float) cube_temperature / 16) >= CONFIG.final_cube_temperature) { // FIXME: избавиться от float
                     set_working_mode(WM_DONE, GUI_FINISH_FORM); // Режим "Готово"
                     *is_redraw = 1; // Нужна перерисовка интерфейса
                 }
@@ -395,9 +390,9 @@ void loop(uint8_t *is_redraw) {
                     ||
                     (!cube_temperature) // Датчик температуры в кубе
                )) ||
-               (CONFIG.tsa_protection && (tsa_temperature > CONFIG.tsa_max_temperature)) // Превышение температуры ТСА
+               (CONFIG.tsa_protection && (((float) tsa_temperature / 16) > CONFIG.tsa_max_temperature)) // Превышение температуры ТСА // FIXME: избавиться от float
                ||
-               (CONFIG.water_protection && (water_temperature > CONFIG.water_max_temperature)) // Превышение температуры воды
+               (CONFIG.water_protection && (((float) water_temperature / 16) > CONFIG.water_max_temperature)) // Превышение температуры воды // FIXME: избавиться от float
             ) {
                 set_working_mode(WM_ERROR, GUI_FINISH_FORM); // Режим "ошибка"
                 *is_redraw = 1; // Нужна перерисовка интерфейса

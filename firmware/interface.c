@@ -127,14 +127,14 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
 uint8_t mui_temp_value(mui_t *ui, uint8_t msg) {
     switch(msg) {
         case MUIF_MSG_DRAW:
-            float temperature = 0;
+            float temperature = 0; // FIXME: избавиться от float
             // Определяем, значение с какого именно датчика необходимо отобразить
             switch(ui->arg) {
-                case TEMP_VALUE_WATER:  temperature = water_temperature; break;
-                case TEMP_VALUE_TSA:    temperature = tsa_temperature; break;
-                case TEMP_VALUE_TSARGA: temperature = tsarga_temperature; break;
-                case TEMP_VALUE_CUBE:   temperature = cube_temperature; break;
-                case TEMP_VALUE_TARGET: temperature = target_temperature; break;
+                case TEMP_VALUE_WATER:  temperature = ((float) water_temperature / 16);  break;
+                case TEMP_VALUE_TSA:    temperature = ((float) tsa_temperature / 16);    break;
+                case TEMP_VALUE_TSARGA: temperature = ((float) tsarga_temperature / 16); break;
+                case TEMP_VALUE_CUBE:   temperature = ((float) cube_temperature / 16);   break;
+                case TEMP_VALUE_TARGET: temperature = ((float) target_temperature / 16); break;
             }
             // Выравнивание
             if(strcmp(ui->text, "C") == 0) { ui->arg = TEXTLABEL_ALIGN_CENTER; } // По центру
@@ -361,8 +361,8 @@ static const muif_t muif_list[] MUI_PROGMEM = {
     MUIF_U8G2_U8_MIN_MAX("WT", &CONFIG.itself_working_temperature, 60, 80, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура начала "работы на себя"
     MUIF_U8G2_U8_MIN_MAX("IW", &CONFIG.itself_working_initial_time, 10, 60, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: длительность "работы на себя" (мин)
     // Отбор спирта
-    MUIF_U8G2_U8_MIN_MAX("TB", &CONFIG.target_delta_before, 0, 9, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (до запятой)
-    MUIF_U8G2_U8_MIN_MAX("TA", &CONFIG.target_delta_after, 0, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (после запятой)
+    MUIF_U8G2_U8_MIN_MAX("TB", &CONFIG.target_delta_before, 0, 9, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (до запятой) // FIXME: использовать int16_t
+    MUIF_U8G2_U8_MIN_MAX("TA", &CONFIG.target_delta_after, 0, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (после запятой) // FIXME: использовать int16_t
     MUIF_U8G2_U8_MIN_MAX("RT", &CONFIG.target_recovery_time, 1, 30, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время восстановления (мин)
     // Безопасность
     MUIF_VARIABLE("SP", &CONFIG.sensors_protection, mui_u8g2_u8_chkbox_wm_pi), // Чекбокс: включить контроль работоспособности датчиков

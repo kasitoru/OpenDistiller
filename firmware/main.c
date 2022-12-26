@@ -46,7 +46,6 @@ void loop(uint8_t *is_redraw); // Основной цикл
 
 // Параметры ректификации
 typedef struct {
-    uint8_t rectification_mode; // Режим ректификации (0 = автоматический, 1 = ручной)
     uint8_t use_tsarga_sensor; // Использовать датчик в царге для контроля отбора
     uint8_t use_reflux_sensor; // Использовать датчик УО для контроля отбора
     uint8_t delta_tsarga_before; // Дельта датчика в царге (до запятой)
@@ -84,16 +83,15 @@ uint8_t REFLUX_STATUS = RS_NOTHEAD; // Первоначальный статус
 // Текущие режимы работы
 uint8_t WORKING_MODE;
 #define WM_SETTING   0  // Параметры
-#define WM_MANUAL    1  // Ручной режим
-#define WM_HEATING   2  // Нагрев куба
-#define WM_WATERING  3  // Включение воды
-#define WM_WORKING   4  // Работа на себя
-#define WM_GETHEAD   5  // Отбор голов
-#define WM_GETBODY   6  // Отбор тела
-#define WM_CIRCULATE 7  // Оборотный спирт
-#define WM_ERROR     8  // Ошибка
-#define WM_DONE      9  // Готово
-#define WM_FINISH    10 // Завершено
+#define WM_HEATING   1  // Нагрев куба
+#define WM_WATERING  2  // Включение воды
+#define WM_WORKING   3  // Работа на себя
+#define WM_GETHEAD   4  // Отбор голов
+#define WM_GETBODY   5  // Отбор тела
+#define WM_CIRCULATE 6  // Оборотный спирт
+#define WM_ERROR     7  // Ошибка
+#define WM_DONE      8  // Готово
+#define WM_FINISH    9  // Завершено
 
 // Подключаем интерфейс
 #include "interface.c"
@@ -167,7 +165,6 @@ int main(void) {
     eeprom_read_block(&CONFIG, 0, sizeof(CONFIG)); // Получаем данные
     if(crc8((uint8_t *) &CONFIG, sizeof(CONFIG) - 1) != CONFIG.crc) { // Если контрольная сумма не совпадает
         // Устанавливаем настройки по-умолчанию
-        CONFIG.rectification_mode = 0; // Режим ректификации (0 = автоматический, 1 = ручной)
         CONFIG.use_tsarga_sensor = 1; // Использовать датчик в царге для контроля отбора (0 = нет, 1 = да)
         CONFIG.use_reflux_sensor = 0; // Использовать датчик УО для контроля отбора (0 = нет, 1 = да)
         CONFIG.delta_tsarga_before = 0; // Дельта датчика в царге до запятой (от 0 до 9)
@@ -317,10 +314,6 @@ void loop(uint8_t *is_redraw) {
             SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Отключаем нагрев
             SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             break;
-        #ifdef MANUAL
-            case WM_MANUAL: // Ручной режим
-                break;
-        #endif
         case WM_HEATING: // Нагрев куба
             // Управляем реле
             SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Отключаем воду
@@ -462,11 +455,11 @@ void loop(uint8_t *is_redraw) {
                     ||
                     (CONFIG.tsa_protection && !tsa_temperature) // Датчик температуры ТСА
                     ||
-                    ((WORKING_MODE != WM_MANUAL) && CONFIG.use_reflux_sensor && !reflux_temperature) // Датчик температуры в узле отбора
+                    (CONFIG.use_reflux_sensor && !reflux_temperature) // Датчик температуры в узле отбора
                     ||
-                    ((WORKING_MODE != WM_MANUAL) && CONFIG.use_tsarga_sensor && !tsarga_temperature) // Датчик температуры в царге
+                    (CONFIG.use_tsarga_sensor && !tsarga_temperature) // Датчик температуры в царге
                     ||
-                    ((WORKING_MODE != WM_MANUAL) && !cube_temperature) // Датчик температуры в кубе
+                    (!cube_temperature) // Датчик температуры в кубе
                )) ||
                (CONFIG.tsa_protection && (tsa_temperature > CONFIG.tsa_max_temperature)) // Превышение температуры ТСА
                ||

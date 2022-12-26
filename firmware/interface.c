@@ -8,29 +8,22 @@
 
 #define GUI_NONE_FORM        0 // Зарезервировано
 #define GUI_SETTING_FORM     1 // Параметры ректификации
-#define GUI_STARTING_FORM    2 // Выбор режима ректификации
-#define GUI_SENSORS_FORM     3 // Используемые датчики отбора
-#define GUI_WORKING_FORM     4 // Работа на себя
-#define GUI_CUBETEMP_FORM    5 // Температура в кубе
-#define GUI_SAFETY_FORM      6 // Безопасность
-#define GUI_BLUETOOTH_FORM   7 // Bluetooth модуль
-#define GUI_RESET_FORM       8 // Сброс настроек
-#define GUI_ABOUT_FORM       9 // О проекте
+#define GUI_SENSORS_FORM     2 // Используемые датчики отбора
+#define GUI_WORKING_FORM     3 // Работа на себя
+#define GUI_CUBETEMP_FORM    4 // Температура в кубе
+#define GUI_SAFETY_FORM      5 // Безопасность
+#define GUI_BLUETOOTH_FORM   6 // Bluetooth модуль
+#define GUI_RESET_FORM       7 // Сброс настроек
+#define GUI_ABOUT_FORM       8 // О проекте
 #define GUI_RECTIFICATE_FORM 100 // Процесс ректификации
 #define GUI_CIRCULATE_FORM   150 // Отбор оборотного спирта
 #define GUI_FINISH_FORM      200 // Ректификация завершена
 
-#ifdef MANUAL
-    #define GUI_WATER_BUTTON     101 // Кнопка "ВОДА"
-    #define GUI_HEAT_BUTTON      102 // Кнопка "НАГРЕВ"
-    #define GUI_REFLUX_BUTTON    103 // Кнопка "ОТБОР"
-    #define GUI_STOP_BUTTON      104 // Кнопка "СТОП"
-#endif
-#define GUI_ENWATER_BUTTON   105 // Кнопка "ВКЛ ВОДУ"
-#define GUI_SKIP_BUTTON      106 // Кнопка "ПРОПУСТИТЬ"
-#define GUI_GETBODY_BUTTON   107 // Кнопка "ОТБОР ТЕЛА"
-#define GUI_WORKING_BUTTON   108 // Кнопка "НА СЕБЯ"
-#define GUI_FINISH_BUTTON    109 // Кнопка "ЗАВЕРШИТЬ"
+#define GUI_ENWATER_BUTTON   101 // Кнопка "ВКЛ ВОДУ"
+#define GUI_SKIP_BUTTON      102 // Кнопка "ПРОПУСТИТЬ"
+#define GUI_GETBODY_BUTTON   103 // Кнопка "ОТБОР ТЕЛА"
+#define GUI_WORKING_BUTTON   104 // Кнопка "НА СЕБЯ"
+#define GUI_FINISH_BUTTON    105 // Кнопка "ЗАВЕРШИТЬ"
 
 // https://github.com/olikraus/u8g2/issues/1988
 #define _MUI_FORM(n) MUI_FORM(n)
@@ -89,7 +82,6 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
             // Выбираем нужный текст, в зависимости от текущей формы
             switch(mui_GetCurrentFormId(ui)) {
                 case GUI_SETTING_FORM:   strcpy(ui->text, I18N_SETTING_MENU);   break;
-                case GUI_STARTING_FORM:  strcpy(ui->text, I18N_START_MENU);     break;
                 case GUI_SENSORS_FORM:   strcpy(ui->text, I18N_SENSORS_MENU);   break;
                 case GUI_WORKING_FORM:   strcpy(ui->text, I18N_WORKING_MENU);   break;
                 case GUI_CUBETEMP_FORM:  strcpy(ui->text, I18N_CUBETEMP_MENU);  break;
@@ -102,9 +94,6 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
                 default:
                     // Текст в зависимости от режима работы
                     switch(WORKING_MODE) {
-                        #ifdef MANUAL
-                            case WM_MANUAL:    strcpy(ui->text, I18N_MANUAL_TITLE);    break;
-                        #endif
                         case WM_HEATING:
                         case WM_WATERING:  strcpy(ui->text, I18N_HEATING_TITLE);   break;
                         case WM_WORKING:   strcpy(ui->text, I18N_WORKING_TITLE);   break;
@@ -215,19 +204,6 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
         case MUIF_MSG_DRAW: // Отрисовка кнопок навигации
         case MUIF_MSG_CURSOR_ENTER: // Навели фокус на кнопку
             switch(WORKING_MODE) { // Для режимов
-                #ifdef MANUAL
-                    case WM_MANUAL: // Ручной режим
-                        switch(ui->arg) {
-                            case GUI_WATER_BUTTON: // Кнопка "ВОДА"
-                            case GUI_HEAT_BUTTON: // Кнопка "НАГРЕВ"
-                            case GUI_REFLUX_BUTTON: // Кнопка "ОТБОР"
-                            case GUI_STOP_BUTTON: // Кнопка "СТОП"
-                                // Кнопки минимально возможной ширины
-                                return mui_u8g2_btn_goto_wm_fi(ui, msg);
-                            default: // Все остальные кнопки
-                                return 255; // Игнорируем
-                        }
-                #endif
                 case WM_HEATING: // Нагрев куба
                     switch(ui->arg) {
                         case GUI_ENWATER_BUTTON: // Кнопка "ВКЛ ВОДУ"
@@ -284,10 +260,10 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
         case MUIF_MSG_CURSOR_SELECT: // Нажатие на одну из кнопок
             // Выбираем нужное действие, в зависимости от текущей формы
             switch(mui_GetCurrentFormId(ui)) {
-                case GUI_STARTING_FORM: // Выбор режима ректификации
-                    if(ui->arg == GUI_RECTIFICATE_FORM) { // Если нажали кнопку "Старт"
+                case GUI_SETTING_FORM: // Параметры ректификации
+                    if(ui->arg == GUI_RECTIFICATE_FORM) { // Если нажали кнопку "СТАРТ"
                         // Устанавливаем ручной или автоматический режим
-                        set_working_mode((CONFIG.rectification_mode == 0 ? WM_HEATING : WM_MANUAL), GUI_RECTIFICATE_FORM);
+                        set_working_mode(WM_HEATING, GUI_RECTIFICATE_FORM);
                         // Запоминаем время старта
                         rect_start_time = now_millis;
                     }
@@ -317,18 +293,6 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
                     break;
                 case GUI_RECTIFICATE_FORM: // Процесс ректификации
                     switch(ui->arg) { // Нажатая кнопка
-                        #ifdef MANUAL
-                            case GUI_WATER_BUTTON: // Кнопка "ВОДА" (ручной режим)
-                                PORTC ^= _BV(PC5); // Вкл/откл реле №1
-                                break;
-                            case GUI_HEAT_BUTTON: // Кнопка "НАГРЕВ" (ручной режим)
-                                PORTC ^= _BV(PC4); // Вкл/откл реле №2
-                                break;
-                            case GUI_REFLUX_BUTTON: // Кнопка "ОТБОР" (ручной режим)
-                                PORTC ^= _BV(PC3); // Вкл/откл реле №3
-                                break;
-                            case GUI_STOP_BUTTON: // Кнопка "СТОП" (ручной режим)
-                        #endif
                         case GUI_FINISH_BUTTON: // Кнопка "ЗАВЕРШИТЬ" (автоматический режим)
                             set_working_mode(WM_DONE, GUI_FINISH_FORM); // Завершаем отбор
                             break;
@@ -395,8 +359,6 @@ static const muif_t muif_list[] MUI_PROGMEM = {
     // Параметры ректификации
     MUIF_RO("ML", mui_u8g2_goto_data), // Список элементов меню параметров
     MUIF_BUTTON("MI", mui_u8g2_goto_form_w1_pi), // Выбор текущего элемента меню
-    // Выбор режима ректификации
-    MUIF_VARIABLE("RM", &CONFIG.rectification_mode, mui_u8g2_u8_radio_wm_pi), // Переключатель: выбор режима ректификации
     // Используемые датчики отбора
     MUIF_VARIABLE("TS", &CONFIG.use_tsarga_sensor, mui_u8g2_u8_chkbox_wm_pi), // Чекбокс: использовать датчик царги для контроля отбора
     MUIF_VARIABLE("RS", &CONFIG.use_reflux_sensor, mui_u8g2_u8_chkbox_wm_pi), // Чекбокс: использовать датчик УО для контроля отбора
@@ -435,33 +397,22 @@ static const fds_t fds_data[] MUI_PROGMEM =
     MUI_AUX("HL")
     MUI_STYLE(0)
     MUI_DATA("ML",
-        MUI_2 I18N_START_MENU "|"     /* GUI_STARTING_FORM */
-        MUI_3 I18N_SENSORS_MENU "|"   /* GUI_SENSORS_FORM */
-        MUI_4 I18N_WORKING_MENU "|"   /* GUI_WORKING_FORM */
-        MUI_5 I18N_CUBETEMP_MENU "|"  /* GUI_CUBETEMP_FORM */
-        MUI_6 I18N_SAFETY_MENU "|"    /* GUI_SAFETY_FORM */
+        MUI_100 I18N_START_MENU "|"     /* GUI_RECTIFICATE_FORM */
+        MUI_2   I18N_SENSORS_MENU "|"   /* GUI_SENSORS_FORM */
+        MUI_3   I18N_WORKING_MENU "|"   /* GUI_WORKING_FORM */
+        MUI_4   I18N_CUBETEMP_MENU "|"  /* GUI_CUBETEMP_FORM */
+        MUI_5   I18N_SAFETY_MENU "|"    /* GUI_SAFETY_FORM */
         #ifdef BLUETOOTH
-            MUI_7 I18N_BLUETOOTH_MENU "|" /* GUI_BLUETOOTH_FORM */
+            MUI_6 I18N_BLUETOOTH_MENU "|" /* GUI_BLUETOOTH_FORM */
         #endif
-        MUI_8 I18N_RESET_MENU "|"     /* GUI_RESET_FORM */
-        MUI_9 I18N_ABOUT_MENU "|"     /* GUI_ABOUT_FORM */
+        MUI_7   I18N_RESET_MENU "|"     /* GUI_RESET_FORM */
+        MUI_8   I18N_ABOUT_MENU "|"     /* GUI_ABOUT_FORM */
     )
     _MUI_XYA("MI", 5, 22, 0)
     _MUI_XYA("MI", 5, 31, 1)
     _MUI_XYA("MI", 5, 40, 2)
     _MUI_XYA("MI", 5, 49, 3)
     _MUI_XYA("MI", 5, 58, 4)
-    
-    // Выбор режима ректификации
-    _MUI_FORM(GUI_STARTING_FORM)
-    MUI_AUX("HL")
-    MUI_STYLE(0)
-    _MUI_XYAT("RM", 5, 22, 0, I18N_AUTO_MODE)
-    #ifdef MANUAL
-        _MUI_XYAT("RM", 5, 31, 1, I18N_MANUAL_MODE)
-    #endif
-    _MUI_GOTO(33, 60, GUI_SETTING_FORM, I18N_CANCEL_BUTTON)
-    _MUI_GOTO(95, 60, GUI_RECTIFICATE_FORM, I18N_START_BUTTON)
     
     // Используемые датчики отбора
     _MUI_FORM(GUI_SENSORS_FORM)
@@ -579,12 +530,6 @@ static const fds_t fds_data[] MUI_PROGMEM =
     _MUI_XYAT("TV", 0, 48, TEMP_VALUE_TSARGA, "C")
     _MUI_XYAT("TV", 0, 48, TEMP_VALUE_REFLUX, "R")
     MUI_STYLE(0)
-    #ifdef MANUAL
-        _MUI_GOTO(16, 60, GUI_WATER_BUTTON, I18N_WATER_BUTTON)
-        _MUI_GOTO(48, 60, GUI_HEAT_BUTTON, I18N_HEAT_BUTTON)
-        _MUI_GOTO(83, 60, GUI_REFLUX_BUTTON, I18N_REFLUX_BUTTON)
-        _MUI_GOTO(113, 60, GUI_STOP_BUTTON, I18N_STOP_BUTTON)
-    #endif
     _MUI_GOTO(33, 60, GUI_ENWATER_BUTTON, I18N_ENWATER_BUTTON)
     _MUI_GOTO(33, 60, GUI_SKIP_BUTTON, I18N_SKIP_BUTTON)
     _MUI_GOTO(33, 60, GUI_GETBODY_BUTTON, I18N_GETBODY_BUTTON)

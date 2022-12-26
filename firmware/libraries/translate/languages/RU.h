@@ -14,7 +14,7 @@
 
 // Параметры ректификации
 #define I18N_SETTING_MENU             "Параметры"
-#define I18N_START_MENU               "Ректификация"
+#define I18N_START_MENU               "СТАРТ"
 #define I18N_SENSORS_MENU             "Датчики отбора"
 #define I18N_WORKING_MENU             "Работа на себя"
 #define I18N_CUBETEMP_MENU            "Температура в кубе"
@@ -22,12 +22,6 @@
 #define I18N_BLUETOOTH_MENU           "Bluetooth модуль"
 #define I18N_RESET_MENU               "Сброс настроек"
 #define I18N_ABOUT_MENU               "О проекте..."
-
-// Выбор режима ректификации
-#define I18N_AUTO_MODE                "Автоматически"
-#define I18N_MANUAL_MODE              "Ручной режим"
-#define I18N_CANCEL_BUTTON            "Отмена"
-#define I18N_START_BUTTON             "Старт"
 
 // Используемые датчики отбора
 #define I18N_TSARGA_SENSOR            "Датчик в царге"
@@ -68,7 +62,6 @@
 #define I18N_ABOUT_TEXT_3             "HTTPS://KASITO.RU"
 
 // Процесс ректификации
-#define I18N_MANUAL_TITLE             "Ручной режим"
 #define I18N_HEATING_TITLE            "Нагрев куба"
 #define I18N_WORKING_TITLE            "Работа на себя"
 #define I18N_GETHEAD_TITLE            "Отбор голов"
@@ -78,10 +71,6 @@
 #define I18N_CUBE_LABEL               "КУБ:"
 #define I18N_TSARGA_LABEL             "ЦАРГА:"
 #define I18N_REFLUX_LABEL             "ОТБОР:"
-#define I18N_WATER_BUTTON             "ВОДА"
-#define I18N_HEAT_BUTTON              "НАГРЕВ"
-#define I18N_REFLUX_BUTTON            "ОТБОР"
-#define I18N_STOP_BUTTON              "СТОП"
 #define I18N_ENWATER_BUTTON           "ВКЛ ВОДУ"
 #define I18N_SKIP_BUTTON              "ПРОПУСТИТЬ"
 #define I18N_GETBODY_BUTTON           "ОТБОР ТЕЛА"

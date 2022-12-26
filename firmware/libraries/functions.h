@@ -12,6 +12,7 @@ uint32_t get_millis();
 uint8_t crc8(uint8_t *buffer, uint8_t size);
 void restart_atmega();
 
+// Изменить состояние порта
 #define SET_PIN_STATE(port, bit, inverted, state) (((!!inverted) != state) ? (port |= _BV(bit)) : (port &= ~_BV(bit)))
 
 // Число с фиксированной запятой (int16_t)

@@ -196,6 +196,25 @@ uint8_t mui_result_label_2(mui_t *ui, uint8_t msg) {
     return 0;
 }
 
+// Пункты главного меню
+uint8_t mui_u8g2_goto_menu(mui_t *ui, uint8_t msg) {
+    switch(msg) {
+        case MUIF_MSG_CURSOR_SELECT: // Выбор пункта меню
+            if(mui_GetSelectableFieldTextOption(ui, ui->last_form_fds, ui->arg + ui->form_scroll_top)) {
+                if((uint8_t) ui->text[0] == GUI_RECTIFICATE_FORM) { // Если нажали "СТАРТ"
+                    // Переходим к началу ректификации
+                    set_working_mode(WM_HEATING, GUI_RECTIFICATE_FORM);
+                    // Запоминаем время старта
+                    rect_start_time = now_millis;
+                    // И больше ничего не делаем
+                    return 0;
+                }
+            }
+            break;
+    }
+    return mui_u8g2_goto_form_w1_pi(ui, msg); // Вызываем нативный callback
+}
+
 // Кнопка навигации
 uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
     switch(msg) {
@@ -258,13 +277,7 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
         case MUIF_MSG_CURSOR_SELECT: // Нажатие на одну из кнопок
             // Выбираем нужное действие, в зависимости от текущей формы
             switch(mui_GetCurrentFormId(ui)) {
-                case GUI_SETTING_FORM: // Параметры ректификации
-                    if(ui->arg == GUI_RECTIFICATE_FORM) { // Если нажали кнопку "СТАРТ"
-                        // Устанавливаем ручной или автоматический режим
-                        set_working_mode(WM_HEATING, GUI_RECTIFICATE_FORM);
-                        // Запоминаем время старта
-                        rect_start_time = now_millis;
-                    }
+                case GUI_SETTING_FORM:    // Параметры ректификации
                 case GUI_CUBETEMP_FORM:   // Температура в кубе
                 case GUI_WORKING_FORM:    // Работа на себя
                 case GUI_GETALCOHOL_FORM: // Отбор спирта
@@ -352,7 +365,7 @@ static const muif_t muif_list[] MUI_PROGMEM = {
     MUIF_GOTO(mui_goto_button), // Кнопка навигации
     // Параметры ректификации
     MUIF_RO("ML", mui_u8g2_goto_data), // Список элементов меню параметров
-    MUIF_BUTTON("MI", mui_u8g2_goto_form_w1_pi), // Выбор текущего элемента меню
+    MUIF_BUTTON("MI", mui_u8g2_goto_menu), // Выбор текущего элемента меню
     // Температура в кубе
     MUIF_U8G2_U8_MIN_MAX("IC", &CONFIG.water_cube_temperature, 60, 80, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура старта подачи воды
     MUIF_U8G2_U8_MIN_MAX("EC", &CONFIG.ethanol_cube_temperature, 85, 110, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: макс. температура для товарного спирта

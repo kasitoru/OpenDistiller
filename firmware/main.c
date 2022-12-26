@@ -32,26 +32,20 @@ mui_t mui; // Интерфейс
 
 float water_temperature = 0; // Температура на выходе водяного охлаждения (датчик 1)
 float tsa_temperature = 0; // Температура трубки связи с атмосферой (датчик 2)
-float reflux_temperature = 0; // Температура флегмы в узле отбора (датчик 3)
-float tsarga_temperature = 0; // Температура в царге (датчик 4)
-float cube_temperature = 0; // Температура в кубе (датчик 5)
+float tsarga_temperature = 0; // Температура в царге (датчик 3)
+float cube_temperature = 0; // Температура в кубе (датчик 4)
+float target_temperature = 0; // Целевая температура царги
 
 uint32_t now_millis = 0; // Текущее время с начала включения
 uint32_t rect_start_time = 0; // Время начала ректификации
 uint32_t last_event_time = 0; // Время последнего события
-float target_tsarga_temp = 0; // Целевая температура царги
-float target_reflux_temp = 0; // Целевая температура УО
 
 void loop(uint8_t *is_redraw); // Основной цикл
 
 // Параметры ректификации
 typedef struct {
-    uint8_t use_tsarga_sensor; // Использовать датчик в царге для контроля отбора
-    uint8_t use_reflux_sensor; // Использовать датчик УО для контроля отбора
-    uint8_t delta_tsarga_before; // Дельта датчика в царге (до запятой)
-    uint8_t delta_tsarga_after; // Дельта датчика в царге (после запятой)
-    uint8_t delta_reflux_before; // Дельта датчика УО (до запятой)
-    uint8_t delta_reflux_after; // Дельта датчика УО (после запятой)
+    uint8_t target_delta_before; // Дельта целевой температуры (до запятой)
+    uint8_t target_delta_after; // Дельта целевой температуры (после запятой)
     uint8_t itself_working_temperature; // Температура начала "работы на себя"
     uint8_t itself_working_initial_time; // Время начальной "работы на себя" (мин)
     uint8_t itself_working_interim_time; // Время промежуточной "работы на себя" (мин)
@@ -145,7 +139,6 @@ int main(void) {
     HW_SENSOR_2_DDR &= ~_BV(HW_SENSOR_2_BIT); ds18b20wsp(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №2
     HW_SENSOR_3_DDR &= ~_BV(HW_SENSOR_3_BIT); ds18b20wsp(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №3
     HW_SENSOR_4_DDR &= ~_BV(HW_SENSOR_4_BIT); ds18b20wsp(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №4
-    HW_SENSOR_5_DDR &= ~_BV(HW_SENSOR_5_BIT); ds18b20wsp(&HW_SENSOR_5_PORT, &HW_SENSOR_5_DDR, &HW_SENSOR_5_PIN, _BV(HW_SENSOR_5_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №5
     // Звук
     HW_BUZZER_DDR |= _BV(HW_BUZZER_BIT); // Зуммер
     // Реле
@@ -165,12 +158,8 @@ int main(void) {
     eeprom_read_block(&CONFIG, 0, sizeof(CONFIG)); // Получаем данные
     if(crc8((uint8_t *) &CONFIG, sizeof(CONFIG) - 1) != CONFIG.crc) { // Если контрольная сумма не совпадает
         // Устанавливаем настройки по-умолчанию
-        CONFIG.use_tsarga_sensor = 1; // Использовать датчик в царге для контроля отбора (0 = нет, 1 = да)
-        CONFIG.use_reflux_sensor = 0; // Использовать датчик УО для контроля отбора (0 = нет, 1 = да)
-        CONFIG.delta_tsarga_before = 0; // Дельта датчика в царге до запятой (от 0 до 9)
-        CONFIG.delta_tsarga_after = 10; // Дельта датчика в царге после запятой (от 0 до 99)
-        CONFIG.delta_reflux_before = 0; // Дельта датчика УО до запятой (от 0 до 9)
-        CONFIG.delta_reflux_after = 10; // Дельта датчика УО после запятой (от 0 до 99)
+        CONFIG.target_delta_before = 0; // Дельта целевой температуры до запятой (от 0 до 9)
+        CONFIG.target_delta_after = 10; // Дельта целевой температуры после запятой (от 0 до 99)
         CONFIG.itself_working_temperature = 85; // Температура начала "работы на себя" (от 70 до 85)
         CONFIG.itself_working_initial_time = 30; // Время начальной "работы на себя" в минутах (от 10 до 60)
         CONFIG.itself_working_interim_time = 1; // Время промежуточной "работы на себя" в минутах (от 1 до 30)
@@ -225,17 +214,17 @@ void loop(uint8_t *is_redraw) {
             mui_NextField(&mui);
             *is_redraw = 1;
             break;
-        case U8X8_MSG_GPIO_MENU_SELECT: // Выбор пункта меню
+        case U8X8_MSG_GPIO_MENU_SELECT: // Выбор
             tone(NOTE_AS4, 50);
             mui_SendSelect(&mui);
             *is_redraw = 1;
             break;
-        case U8X8_MSG_GPIO_MENU_DOWN: // Уменьшить значение
+        case U8X8_MSG_GPIO_MENU_DOWN: // Уменьшить
             tone(NOTE_AS4, 50);
             mui_SendValueDecrement(&mui);
             *is_redraw = 1;
             break;
-        case U8X8_MSG_GPIO_MENU_UP: // Увеличить значение
+        case U8X8_MSG_GPIO_MENU_UP: // Увеличить
             tone(NOTE_AS4, 50);
             mui_SendValueIncrement(&mui);
             *is_redraw = 1;
@@ -266,18 +255,8 @@ void loop(uint8_t *is_redraw) {
                 #endif
                 *is_redraw = 1;
             }
-            // Температура флегмы в узле отбора (датчик 3)
+            // Температура в царге (датчик 3)
             ds18b20read(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, &temperature_integer);
-            temperature_float = ((float) temperature_integer / 16);
-            if((temperature_float != reflux_temperature) && !(temperature_integer == 1360 && !reflux_temperature)) {
-                reflux_temperature = temperature_float;
-                #ifdef UART
-                    uart_printf("REFLUX:%.2f\n", reflux_temperature);
-                #endif
-                *is_redraw = 1;
-            }
-            // Температура в царге (датчик 4)
-            ds18b20read(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != tsarga_temperature) && !(temperature_integer == 1360 && !tsarga_temperature)) {
                 tsarga_temperature = temperature_float;
@@ -286,8 +265,8 @@ void loop(uint8_t *is_redraw) {
                 #endif
                 *is_redraw = 1;
             }
-            // Температура в кубе (датчик 5)
-            ds18b20read(&HW_SENSOR_5_PORT, &HW_SENSOR_5_DDR, &HW_SENSOR_5_PIN, _BV(HW_SENSOR_5_BIT), NULL, &temperature_integer);
+            // Температура в кубе (датчик 4)
+            ds18b20read(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, &temperature_integer);
             temperature_float = ((float) temperature_integer / 16);
             if((temperature_float != cube_temperature) && !(temperature_integer == 1360 && !cube_temperature)) {
                 cube_temperature = temperature_float;
@@ -302,7 +281,6 @@ void loop(uint8_t *is_redraw) {
         ds18b20convert(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL); // Датчик 2
         ds18b20convert(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL); // Датчик 3
         ds18b20convert(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL); // Датчик 4
-        ds18b20convert(&HW_SENSOR_5_PORT, &HW_SENSOR_5_DDR, &HW_SENSOR_5_PIN, _BV(HW_SENSOR_5_BIT), NULL); // Датчик 5
         // Запоминаем время опроса
         ds18b20read_time = now_millis;
     }
@@ -345,27 +323,22 @@ void loop(uint8_t *is_redraw) {
             if(REFLUX_STATUS == RS_NOTHEAD) {
                 // Начальная "работа на себя" заданное время
                 if((now_millis - last_event_time) >= ((uint32_t) CONFIG.itself_working_initial_time * 60 * 1000)) {
-                    target_tsarga_temp = tsarga_temperature; // Запоминаем целевую температуру царги
-                    target_reflux_temp = reflux_temperature; // Запоминаем целевую температуру УО
+                    target_temperature = tsarga_temperature; // Запоминаем целевую температуру царги
                     set_working_mode(WM_GETHEAD, GUI_RECTIFICATE_FORM); // Переходим к отбору голов
                     REFLUX_STATUS = RS_YESHEAD; // Отбор голов в процессе
                     *is_redraw = 1; // Нужна перерисовка интерфейса
                 }
             } else { // Отбор голов или тела в процессе, но сейчас нужна промежуточная "поработать на себя"
                 if((now_millis - last_event_time) > ((uint32_t) CONFIG.itself_working_interim_time * 60 * 1000)) { // Если за заданное время
-                    // Если значения температур датчиков меняются не больше суммы целевой температуры и дельты
-                    if((!CONFIG.use_tsarga_sensor || (CONFIG.use_tsarga_sensor && ((tsarga_temperature - target_tsarga_temp) <= ((float) CONFIG.delta_tsarga_after / 100 + CONFIG.delta_tsarga_before)))) // Царга
-                       &&
-                       (!CONFIG.use_reflux_sensor || (CONFIG.use_reflux_sensor && ((reflux_temperature - target_reflux_temp) <= ((float) CONFIG.delta_reflux_after / 100 + CONFIG.delta_reflux_before)))) // УО
-                    ) {
+                    // Если значение температуры датчика изменилось не более суммы целевой температуры и дельты
+                    if((tsarga_temperature - target_temperature) <= ((float) CONFIG.target_delta_after / 100 + CONFIG.target_delta_before)) {
                         // Если отбор голов в процессе
                         if(REFLUX_STATUS == RS_YESHEAD) {
                             set_working_mode(WM_GETHEAD, GUI_RECTIFICATE_FORM); // Возвращаемся к отбору голов
                         } else {
                             // Отбор голов закончили, но к отбору тела еще не приступили
                             if(REFLUX_STATUS == RS_NOTBODY) {
-                                target_tsarga_temp = tsarga_temperature; // Запоминаем целевую температуру царги
-                                target_reflux_temp = reflux_temperature; // Запоминаем целевую температуру УО
+                                target_temperature = tsarga_temperature; // Запоминаем целевую температуру царги
                                 REFLUX_STATUS = RS_YESBODY; // Теперь начинаем отбор тела
                             }
                             set_working_mode(WM_GETBODY, GUI_RECTIFICATE_FORM); // Приступаем к отбору тела
@@ -374,8 +347,7 @@ void loop(uint8_t *is_redraw) {
                     }
                     // Отбор голов в процессе или закончен, но к отбору тела еще не приступили
                     if(REFLUX_STATUS == RS_YESHEAD || REFLUX_STATUS == RS_NOTBODY) {
-                        target_tsarga_temp = tsarga_temperature; // Запоминаем целевую температуру царги
-                        target_reflux_temp = reflux_temperature; // Запоминаем целевую температуру УО
+                        target_temperature = tsarga_temperature; // Запоминаем целевую температуру царги
                     }
                     last_event_time = now_millis; // Обновляем время последнего события
                 }
@@ -387,11 +359,8 @@ void loop(uint8_t *is_redraw) {
             SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
             SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
             SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 1); // Включаем отбор
-            // Если значения температур датчиков стали больше суммы целевой температуры и дельты
-            if((!CONFIG.use_tsarga_sensor || (CONFIG.use_tsarga_sensor && ((tsarga_temperature - target_tsarga_temp) > ((float) CONFIG.delta_tsarga_after / 100 + CONFIG.delta_tsarga_before)))) // Царга
-               &&
-               (!CONFIG.use_reflux_sensor || (CONFIG.use_reflux_sensor && ((reflux_temperature - target_reflux_temp) > ((float) CONFIG.delta_reflux_after / 100 + CONFIG.delta_reflux_before)))) // УО
-            ) {
+            // Если значение температуры датчика стало больше суммы целевой температуры и дельты
+            if((tsarga_temperature - target_temperature) > ((float) CONFIG.target_delta_after / 100 + CONFIG.target_delta_before)) {
                 set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Начинаем "работать на себя"
                 *is_redraw = 1; // Нужна перерисовка интерфейса
             }
@@ -455,9 +424,7 @@ void loop(uint8_t *is_redraw) {
                     ||
                     (CONFIG.tsa_protection && !tsa_temperature) // Датчик температуры ТСА
                     ||
-                    (CONFIG.use_reflux_sensor && !reflux_temperature) // Датчик температуры в узле отбора
-                    ||
-                    (CONFIG.use_tsarga_sensor && !tsarga_temperature) // Датчик температуры в царге
+                    (!tsarga_temperature) // Датчик температуры в царге
                     ||
                     (!cube_temperature) // Датчик температуры в кубе
                )) ||

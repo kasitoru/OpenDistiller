@@ -8,7 +8,7 @@
 
 #define GUI_NONE_FORM        0 // Зарезервировано
 #define GUI_SETTING_FORM     1 // Параметры ректификации
-#define GUI_SENSORS_FORM     2 // Используемые датчики отбора
+#define GUI_SENSORS_FORM     2 // Датчики отбора
 #define GUI_WORKING_FORM     3 // Работа на себя
 #define GUI_CUBETEMP_FORM    4 // Температура в кубе
 #define GUI_SAFETY_FORM      5 // Безопасность
@@ -123,9 +123,9 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
 // Значение температуры
 #define TEMP_VALUE_WATER  1 // Температура на выходе водяного охлаждения (датчик 1)
 #define TEMP_VALUE_TSA    2 // Температура трубки связи с атмосферой (датчик 2)
-#define TEMP_VALUE_REFLUX 3 // Температура флегмы в узле отбора (датчик 3)
-#define TEMP_VALUE_TSARGA 4 // Температура в царге (датчик 4)
-#define TEMP_VALUE_CUBE   5 // Температура в кубе (датчик 5)
+#define TEMP_VALUE_TSARGA 3 // Температура в царге (датчик 3)
+#define TEMP_VALUE_CUBE   4 // Температура в кубе (датчик 4)
+#define TEMP_VALUE_TARGET 5 // Целевая температура царги
 uint8_t mui_temp_value(mui_t *ui, uint8_t msg) {
     switch(msg) {
         case MUIF_MSG_DRAW:
@@ -134,9 +134,9 @@ uint8_t mui_temp_value(mui_t *ui, uint8_t msg) {
             switch(ui->arg) {
                 case TEMP_VALUE_WATER:  temperature = water_temperature; break;
                 case TEMP_VALUE_TSA:    temperature = tsa_temperature; break;
-                case TEMP_VALUE_REFLUX: temperature = reflux_temperature; break;
                 case TEMP_VALUE_TSARGA: temperature = tsarga_temperature; break;
                 case TEMP_VALUE_CUBE:   temperature = cube_temperature; break;
+                case TEMP_VALUE_TARGET: temperature = target_temperature; break;
             }
             // Выравнивание
             if(strcmp(ui->text, "C") == 0) { ui->arg = TEXTLABEL_ALIGN_CENTER; } // По центру
@@ -267,7 +267,7 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
                         // Запоминаем время старта
                         rect_start_time = now_millis;
                     }
-                case GUI_SENSORS_FORM:   // Используемые датчики отбора
+                case GUI_SENSORS_FORM:   // Датчики отбора
                 case GUI_WORKING_FORM:   // Время "работы на себя"
                 case GUI_CUBETEMP_FORM:  // Температура в кубе
                 case GUI_SAFETY_FORM:    // Безопасность
@@ -300,8 +300,7 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
                             set_working_mode(WM_WATERING, GUI_RECTIFICATE_FORM); // Включаем воду
                             break;
                         case GUI_SKIP_BUTTON: // Кнопка "ПРОПУСТИТЬ" (работа на себя)
-                            target_tsarga_temp = tsarga_temperature; // Запоминаем целевую температуру царги
-                            target_reflux_temp = reflux_temperature; // Запоминаем целевую температуру УО
+                            target_temperature = tsarga_temperature; // Запоминаем целевую температуру царги
                             // В зависимости от текущего статуса ректификации
                             switch(REFLUX_STATUS) {
                                 case RS_NOTHEAD: // Отбора голов еще не было
@@ -317,8 +316,7 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
                             }
                             break;
                         case GUI_GETBODY_BUTTON: // Кнопка "ОТБОР ТЕЛА" (отбор голов)
-                            target_tsarga_temp = tsarga_temperature; // Запоминаем целевую температуру царги
-                            target_reflux_temp = reflux_temperature; // Запоминаем целевую температуру УО
+                            target_temperature = tsarga_temperature; // Запоминаем целевую температуру царги
                             REFLUX_STATUS = RS_NOTBODY; // Отбор голов закончили, но к отбору тела еще не приступили
                         case GUI_WORKING_BUTTON: // Кнопка "НА СЕБЯ" (отбор тела)
                             set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Начинаем "работать на себя"
@@ -359,13 +357,9 @@ static const muif_t muif_list[] MUI_PROGMEM = {
     // Параметры ректификации
     MUIF_RO("ML", mui_u8g2_goto_data), // Список элементов меню параметров
     MUIF_BUTTON("MI", mui_u8g2_goto_form_w1_pi), // Выбор текущего элемента меню
-    // Используемые датчики отбора
-    MUIF_VARIABLE("TS", &CONFIG.use_tsarga_sensor, mui_u8g2_u8_chkbox_wm_pi), // Чекбокс: использовать датчик царги для контроля отбора
-    MUIF_VARIABLE("RS", &CONFIG.use_reflux_sensor, mui_u8g2_u8_chkbox_wm_pi), // Чекбокс: использовать датчик УО для контроля отбора
-    MUIF_U8G2_U8_MIN_MAX("TB", &CONFIG.delta_tsarga_before, 0, 9, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (до запятой)
-    MUIF_U8G2_U8_MIN_MAX("TA", &CONFIG.delta_tsarga_after, 0, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (после запятой)
-    MUIF_U8G2_U8_MIN_MAX("RB", &CONFIG.delta_reflux_before, 0, 9, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика узла отбора (до запятой)
-    MUIF_U8G2_U8_MIN_MAX("RA", &CONFIG.delta_reflux_after, 0, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика узла отбора (после запятой)
+    // Датчики отбора
+    MUIF_U8G2_U8_MIN_MAX("TB", &CONFIG.target_delta_before, 0, 9, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (до запятой)
+    MUIF_U8G2_U8_MIN_MAX("TA", &CONFIG.target_delta_after, 0, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (после запятой)
     // Работа на себя
     MUIF_U8G2_U8_MIN_MAX("WT", &CONFIG.itself_working_temperature, 80, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура начала "работы на себя"
     MUIF_U8G2_U8_MIN_MAX("IW", &CONFIG.itself_working_initial_time, 10, 60, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время начальной "работы на себя" (мин)
@@ -414,20 +408,14 @@ static const fds_t fds_data[] MUI_PROGMEM =
     _MUI_XYA("MI", 5, 49, 3)
     _MUI_XYA("MI", 5, 58, 4)
     
-    // Используемые датчики отбора
+    // Датчики отбора
     _MUI_FORM(GUI_SENSORS_FORM)
     MUI_AUX("HL")
     MUI_STYLE(0)
-    _MUI_XYT("TS", 5, 22, I18N_TSARGA_SENSOR)
-    _MUI_XYAT("TL", 5, 31, TEXTLABEL_ALIGN_LEFT, I18N_SELECTION_DELTA)
-    MUI_XY("TB", 105, 31)
-    _MUI_XYAT("TL", 110, 31, TEXTLABEL_ALIGN_LEFT, I18N_DECIMAL_SEPARATOR)
-    MUI_XY("TA", 115, 31)
-    _MUI_XYT("RS", 5, 40, I18N_REFLUX_SENSOR)
-    _MUI_XYAT("TL", 5, 49, TEXTLABEL_ALIGN_LEFT, I18N_SELECTION_DELTA)
-    MUI_XY("RB", 105, 49)
-    _MUI_XYAT("TL", 110, 49, TEXTLABEL_ALIGN_LEFT, I18N_DECIMAL_SEPARATOR)
-    MUI_XY("RA", 115, 49)
+    _MUI_XYAT("TL", 5, 22, TEXTLABEL_ALIGN_LEFT, I18N_SELECTION_DELTA)
+    MUI_XY("TB", 105, 22)
+    _MUI_XYAT("TL", 110, 22, TEXTLABEL_ALIGN_LEFT, I18N_DECIMAL_SEPARATOR)
+    MUI_XY("TA", 115, 22)
     _MUI_GOTO(64, 60, GUI_SETTING_FORM, I18N_OK_BUTTON)
     
     // Работа на себя
@@ -523,12 +511,12 @@ static const fds_t fds_data[] MUI_PROGMEM =
     _MUI_XYAT("TV", 30, 22, TEMP_VALUE_WATER, "L")
     _MUI_XYAT("TV", 0, 22, TEMP_VALUE_TSA, "R")
     _MUI_XYAT("TL", 0, 35, TEXTLABEL_ALIGN_LEFT, I18N_CUBE_LABEL)
-    _MUI_XYAT("TL", 0, 35, TEXTLABEL_ALIGN_CENTER, I18N_TSARGA_LABEL)
-    _MUI_XYAT("TL", 0, 35, TEXTLABEL_ALIGN_RIGHT, I18N_REFLUX_LABEL)
+    _MUI_XYAT("TL", 0, 35, TEXTLABEL_ALIGN_CENTER, I18N_TARGET_LABEL)
+    _MUI_XYAT("TL", 0, 35, TEXTLABEL_ALIGN_RIGHT, I18N_TSARGA_LABEL)
     MUI_STYLE(1)
     _MUI_XYAT("TV", 0, 48, TEMP_VALUE_CUBE, "L")
-    _MUI_XYAT("TV", 0, 48, TEMP_VALUE_TSARGA, "C")
-    _MUI_XYAT("TV", 0, 48, TEMP_VALUE_REFLUX, "R")
+    _MUI_XYAT("TV", 0, 48, TEMP_VALUE_TARGET, "C")
+    _MUI_XYAT("TV", 0, 48, TEMP_VALUE_TSARGA, "R")
     MUI_STYLE(0)
     _MUI_GOTO(33, 60, GUI_ENWATER_BUTTON, I18N_ENWATER_BUTTON)
     _MUI_GOTO(33, 60, GUI_SKIP_BUTTON, I18N_SKIP_BUTTON)

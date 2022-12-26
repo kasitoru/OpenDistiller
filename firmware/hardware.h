@@ -70,11 +70,6 @@
 #define HW_SENSOR_4_DDR      DDRD
 #define HW_SENSOR_4_PORT     PORTD
 
-#define HW_SENSOR_5_BIT      PD2
-#define HW_SENSOR_5_PIN      PIND
-#define HW_SENSOR_5_DDR      DDRD
-#define HW_SENSOR_5_PORT     PORTD
-
 // Звук
 #define HW_BUZZER_BIT        PB1
 #define HW_BUZZER_PIN        PINB
@@ -101,9 +96,9 @@
 #define HW_RELAY_3_PORT      PORTC
 
 // Bluetooth
-#define HW_BLUETOOTH_EN_BIT  PB4
-#define HW_BLUETOOTH_EN_PIN  PINB
-#define HW_BLUETOOTH_EN_DDR  DDRB
-#define HW_BLUETOOTH_EN_PORT PORTB
+#define HW_BLUETOOTH_EN_BIT  PD2
+#define HW_BLUETOOTH_EN_PIN  PIND
+#define HW_BLUETOOTH_EN_DDR  DDRD
+#define HW_BLUETOOTH_EN_PORT PORTD
 
 #endif /* HARDWARE_H_ */

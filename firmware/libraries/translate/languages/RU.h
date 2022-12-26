@@ -23,9 +23,7 @@
 #define I18N_RESET_MENU               "Сброс настроек"
 #define I18N_ABOUT_MENU               "О проекте..."
 
-// Используемые датчики отбора
-#define I18N_TSARGA_SENSOR            "Датчик в царге"
-#define I18N_REFLUX_SENSOR            "Датчик узла отбора"
+// Датчики отбора
 #define I18N_SELECTION_DELTA          "Дельта отбора:"
 #define I18N_DECIMAL_SEPARATOR        "."
 #define I18N_OK_BUTTON                "Ок"
@@ -69,8 +67,8 @@
 #define I18N_WATER_LABEL              "ВОДА:"
 #define I18N_TSA_LABEL                "ТСА:"
 #define I18N_CUBE_LABEL               "КУБ:"
+#define I18N_TARGET_LABEL             "ЦЕЛЬ:"
 #define I18N_TSARGA_LABEL             "ЦАРГА:"
-#define I18N_REFLUX_LABEL             "ОТБОР:"
 #define I18N_ENWATER_BUTTON           "ВКЛ ВОДУ"
 #define I18N_SKIP_BUTTON              "ПРОПУСТИТЬ"
 #define I18N_GETBODY_BUTTON           "ОТБОР ТЕЛА"

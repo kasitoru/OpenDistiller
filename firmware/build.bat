@@ -17,7 +17,7 @@ RMDIR /S /Q temp
 MKDIR temp
 CD temp
 
-SET "CCFLAGS=-Wall -Os -mmcu=atmega328p -DF_CPU=16000000L -ffunction-sections -fdata-sections -Wl,--gc-sections,-u,vfprintf -lprintf_flt --param=min-pagesize=0"
+SET "CCFLAGS=-Wall -Os -mmcu=atmega328p -DF_CPU=16000000L -ffunction-sections -fdata-sections -Wl,--gc-sections --param=min-pagesize=0"
 
 ECHO Компиляция libraries/avr-ds18b20...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -I ../libraries/avr-ds18b20/include/ -c ../libraries/avr-ds18b20/src/*.c"

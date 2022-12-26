@@ -46,15 +46,6 @@ CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/tone/*.c"
 ECHO Компиляция libraries/functions.c...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/functions.c"
 
-IF DEFINED MODULE_DEBUG (
-    ECHO Компиляция libraries/debug...
-    CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/debug/*.c"
-    IF NOT DEFINED MODULE_UART (
-        SET "MODULE_UART=1"
-        SET "DEFINES=%DEFINES% -DUART"
-    )
-)
-
 IF DEFINED MODULE_UART (
     ECHO Компиляция libraries/uart...
     CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/uart/*.c"

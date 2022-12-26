@@ -19,11 +19,8 @@
 #include "libraries/functions.h" // Разное
 #include "hardware.h" // Номера портов
 
-#if defined(UART) || defined(DEBUG)
+#if defined(UART)
     #include "libraries/uart/uart.h" // Последовательный порт
-    #ifdef DEBUG
-        #include "libraries/debug/debug.h" // Функции отладки
-    #endif
 #endif
 
 // Глобальные переменные
@@ -149,7 +146,7 @@ int main(void) {
         // Bluetooth модуль
         HW_BLUETOOTH_EN_DDR |= _BV(HW_BLUETOOTH_EN_BIT); // Управление питанием
     #endif
-    #if defined(UART) || defined(DEBUG)
+    #if defined(UART)
         // Последовательный порт
         uart_init(9600);
     #endif
@@ -191,13 +188,6 @@ uint32_t ds18b20read_time = 0; // Время последнего опроса �
 void loop(uint8_t *is_redraw) {
     // Запоминаем текущее время
     now_millis = get_millis();
-    #ifdef DEBUG
-        // Если включен режим отладки
-        if((now_millis % 1000) == 0) { // Каждую секунду
-            // Отправляем количество свободной оперативной памяти
-            uart_printf("RAM:%i\n", free_ram());
-        }
-    #endif
     #ifdef BLUETOOTH
         // Управление Bluetooth модулем
         SET_PIN_STATE(HW_BLUETOOTH_EN_PORT, HW_BLUETOOTH_EN_BIT, 0, CONFIG.use_bluetooth);

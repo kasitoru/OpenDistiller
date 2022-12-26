@@ -8,7 +8,7 @@ CHCP 65001 > nul
 REM ==================================================
 SET "VERSION=1.0"
 SET "LANGUAGE=RU"
-SET "MODULES=UART,BLUETOOTH"
+SET "MODULES=BLUETOOTH"
 
 SET "CROSS_COMPILE=C:\Program Files\avr-gcc\bin\avr-"
 REM ==================================================
@@ -40,16 +40,14 @@ CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DU8X8_USE_PINS -c ../libraries/u8x8_
 ECHO Компиляция libraries/u8g2...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -c ../libraries/u8g2/csrc/*.c"
 
+ECHO Компиляция libraries/uart...
+CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/uart/*.c"
+
 ECHO Компиляция libraries/tone...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/tone/*.c"
 
 ECHO Компиляция libraries/functions.c...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/functions.c"
-
-IF DEFINED MODULE_UART (
-    ECHO Компиляция libraries/uart...
-    CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/uart/*.c"
-)
 
 ECHO Компиляция main.c...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% %DEFINES% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -c ../main.c"

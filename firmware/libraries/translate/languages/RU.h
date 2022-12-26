@@ -29,7 +29,7 @@
 #define I18N_OK_BUTTON                "Ок"
 
 // Работа на себя
-#define I18N_WORKING_TEMPERATURE      "Темп.старта (в кубе):"
+#define I18N_WORKING_TEMPERATURE      "Темп.старта (в царге):"
 #define I18N_WORKING_INITIAL_TIME     "Начальная длит.(мин):"
 #define I18N_WORKING_INTERIM_TIME     "Промежуточная (мин):"
 

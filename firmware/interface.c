@@ -361,7 +361,7 @@ static const muif_t muif_list[] MUI_PROGMEM = {
     MUIF_U8G2_U8_MIN_MAX("TB", &CONFIG.target_delta_before, 0, 9, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (до запятой)
     MUIF_U8G2_U8_MIN_MAX("TA", &CONFIG.target_delta_after, 0, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: дельта датчика царги (после запятой)
     // Работа на себя
-    MUIF_U8G2_U8_MIN_MAX("WT", &CONFIG.itself_working_temperature, 80, 99, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура начала "работы на себя"
+    MUIF_U8G2_U8_MIN_MAX("WT", &CONFIG.itself_working_temperature, 60, 80, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: температура начала "работы на себя"
     MUIF_U8G2_U8_MIN_MAX("IW", &CONFIG.itself_working_initial_time, 10, 60, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время начальной "работы на себя" (мин)
     MUIF_U8G2_U8_MIN_MAX("RT", &CONFIG.itself_working_interim_time, 1, 30, mui_u8g2_u8_min_max_wm_mse_pi), // Ввод числа: время промежуточной "работы на себя" (мин)
     // Температура в кубе

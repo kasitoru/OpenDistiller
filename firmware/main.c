@@ -160,7 +160,7 @@ int main(void) {
         // Устанавливаем настройки по-умолчанию
         CONFIG.target_delta_before = 0; // Дельта целевой температуры до запятой (от 0 до 9)
         CONFIG.target_delta_after = 10; // Дельта целевой температуры после запятой (от 0 до 99)
-        CONFIG.itself_working_temperature = 85; // Температура начала "работы на себя" (от 70 до 85)
+        CONFIG.itself_working_temperature = 70; // Температура начала "работы на себя" (от 60 до 80)
         CONFIG.itself_working_initial_time = 30; // Время начальной "работы на себя" в минутах (от 10 до 60)
         CONFIG.itself_working_interim_time = 1; // Время промежуточной "работы на себя" в минутах (от 1 до 30)
         CONFIG.water_cube_temperature = 75; // Температура старта подачи воды (от 60 до 80)
@@ -309,7 +309,7 @@ void loop(uint8_t *is_redraw) {
             SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
             SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             // Проверяем, не пора ли начать "работать на себя"
-            if(cube_temperature >= ((float) CONFIG.itself_working_temperature)) {
+            if(tsarga_temperature >= ((float) CONFIG.itself_working_temperature)) {
                 set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Режим "работа на себя"
                 *is_redraw = 1; // Нужна перерисовка интерфейса
             }

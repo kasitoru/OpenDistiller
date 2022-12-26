@@ -52,9 +52,7 @@ typedef struct {
     uint8_t water_protection; // Включить защиту по температуре воды
     uint8_t water_max_temperature; // Максимальная температура воды
     uint8_t phlegm_wait_time; // Время сброса флегмы (мин)
-    #ifdef BLUETOOTH
-        uint8_t use_bluetooth; // Использовать Bluetooth модуль
-    #endif
+    uint8_t use_bluetooth; // Использовать Bluetooth модуль
     uint8_t crc; // Контрольная сумма настроек
 } CFG_DATA;
 CFG_DATA CONFIG;
@@ -137,10 +135,8 @@ int main(void) {
     HW_RELAY_1_DDR |= _BV(HW_RELAY_1_BIT); SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Реле №1
     HW_RELAY_2_DDR |= _BV(HW_RELAY_2_BIT); SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Реле №2
     HW_RELAY_3_DDR |= _BV(HW_RELAY_3_BIT); SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Реле №3
-    #ifdef BLUETOOTH
-        // Bluetooth модуль
-        HW_BLUETOOTH_EN_DDR |= _BV(HW_BLUETOOTH_EN_BIT); // Управление питанием
-    #endif
+    // Bluetooth модуль
+    HW_BLUETOOTH_EN_DDR |= _BV(HW_BLUETOOTH_EN_BIT); // Управление питанием
     // Последовательный порт
     uart_init(9600);
     // Читаем настройки из памяти
@@ -162,9 +158,7 @@ int main(void) {
         CONFIG.water_protection = 1; // Включить защиту по температуре воды (0 = нет, 1 = да)
         CONFIG.water_max_temperature = 60; // Максимальная температура воды (от 40 до 60)
         CONFIG.phlegm_wait_time = 3; // Время сброса флегмы в минутах (от 1 до 10)
-        #ifdef BLUETOOTH
-            CONFIG.use_bluetooth = 0; // Использовать Bluetooth модуль (0 = нет, 1 = да)
-        #endif
+        CONFIG.use_bluetooth = 0; // Использовать Bluetooth модуль (0 = нет, 1 = да)
         CONFIG.crc = 0x00; // Контрольная сумма CRC8
     }
     // Инициализация MUI-интерфейса
@@ -181,10 +175,8 @@ uint32_t ds18b20read_time = 0; // Время последнего опроса �
 void loop(uint8_t *is_redraw) {
     // Запоминаем текущее время
     now_millis = get_millis();
-    #ifdef BLUETOOTH
-        // Управление Bluetooth модулем
-        SET_PIN_STATE(HW_BLUETOOTH_EN_PORT, HW_BLUETOOTH_EN_BIT, 0, CONFIG.use_bluetooth);
-    #endif
+    // Управление Bluetooth модулем
+    SET_PIN_STATE(HW_BLUETOOTH_EN_PORT, HW_BLUETOOTH_EN_BIT, 0, CONFIG.use_bluetooth);
     // Опрос кнопок
     switch(u8x8_GetMenuEvent(u8g2_GetU8x8(&u8g2))) {
         case U8X8_MSG_GPIO_MENU_PREV: // Назад

@@ -8,7 +8,6 @@ CHCP 65001 > nul
 REM ==================================================
 SET "VERSION=1.0"
 SET "LANGUAGE=RU"
-SET "MODULES=BLUETOOTH"
 
 SET "CROSS_COMPILE=C:\Program Files\avr-gcc\bin\avr-"
 REM ==================================================
@@ -17,17 +16,6 @@ DEL /F /Q firmware.hex
 RMDIR /S /Q temp
 MKDIR temp
 CD temp
-
-SET "DEFINES=-DVERSION=\"%VERSION%\" -DLANG=%LANGUAGE%"
-SETLOCAL EnableDelayedExpansion
-FOR %%M IN ("%MODULES:,=" "%") DO (
-    IF NOT %%M == "" (
-        IF NOT %%M == ",=" (
-            SET "DEFINES=!DEFINES! -D%%~M"
-            SET "MODULE_%%~M=1"
-        )
-    )
-)
 
 SET "CCFLAGS=-Wall -Os -mmcu=atmega328p -DF_CPU=16000000L -ffunction-sections -fdata-sections -Wl,--gc-sections,-u,vfprintf -lprintf_flt --param=min-pagesize=0"
 
@@ -50,7 +38,7 @@ ECHO Компиляция libraries/functions.c...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/functions.c"
 
 ECHO Компиляция main.c...
-CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% %DEFINES% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -c ../main.c"
+CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DVERSION=\"%VERSION%\" -DLANG=%LANGUAGE% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -c ../main.c"
 
 ECHO Линковка файлов...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% *.o -o firmware.o"

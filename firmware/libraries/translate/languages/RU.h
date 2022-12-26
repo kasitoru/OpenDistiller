@@ -29,7 +29,7 @@
 #define I18N_FINAL_CUBE_TEMPERATURE   "Окончание работы:"
 
 // Работа на себя
-#define I18N_WORKING_TEMPERATURE      "Темп.старта (в царге):"
+#define I18N_WORKING_TEMPERATURE      "Темп.старта (царга):"
 #define I18N_WORKING_INITIAL_TIME     "Длительность (мин):"
 
 // Отбор спирта

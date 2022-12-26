@@ -127,14 +127,14 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
 uint8_t mui_temp_value(mui_t *ui, uint8_t msg) {
     switch(msg) {
         case MUIF_MSG_DRAW:
-            float temperature = 0;
+            int16_t temperature = 0;
             // Определяем, значение с какого именно датчика необходимо отобразить
             switch(ui->arg) {
-                case TEMP_VALUE_WATER:  temperature = ((float) water_temperature / 16);  break;
-                case TEMP_VALUE_TSA:    temperature = ((float) tsa_temperature / 16);    break;
-                case TEMP_VALUE_TSARGA: temperature = ((float) tsarga_temperature / 16); break;
-                case TEMP_VALUE_CUBE:   temperature = ((float) cube_temperature / 16);   break;
-                case TEMP_VALUE_TARGET: temperature = ((float) target_temperature / 16); break;
+                case TEMP_VALUE_WATER:  temperature = water_temperature;  break;
+                case TEMP_VALUE_TSA:    temperature = tsa_temperature;    break;
+                case TEMP_VALUE_TSARGA: temperature = tsarga_temperature; break;
+                case TEMP_VALUE_CUBE:   temperature = cube_temperature;   break;
+                case TEMP_VALUE_TARGET: temperature = target_temperature; break;
             }
             // Выравнивание
             if(strcmp(ui->text, "C") == 0) { ui->arg = TEXTLABEL_ALIGN_CENTER; } // По центру
@@ -142,7 +142,7 @@ uint8_t mui_temp_value(mui_t *ui, uint8_t msg) {
             else { ui->arg = TEXTLABEL_ALIGN_LEFT; } // По левому краю
             // Формируем текстовую надпись во временный буффер
             char buffer[MUI_MAX_TEXT_LEN + 1];
-            if(snprintf(buffer, (sizeof(buffer)/sizeof(*buffer)), "%.2f", temperature) != -1) {
+            if(snprintf(buffer, (sizeof(buffer)/sizeof(*buffer)), FPN_FORMAT, FPN_GBD(temperature), FPN_GAD(temperature)) != -1) {
                 // Передаем этот буффер в функцию отрисовки
                 strcpy(ui->text, buffer);
                 return mui_text_label(ui, msg);

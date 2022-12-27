@@ -6,9 +6,7 @@
 CHCP 65001 > nul
 
 REM ==================================================
-SET "VERSION=1.0"
 SET "LANGUAGE=RU"
-
 SET "CROSS_COMPILE=C:\Program Files\avr-gcc\bin\avr-"
 REM ==================================================
 
@@ -38,7 +36,7 @@ ECHO Компиляция libraries/functions.c...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -c ../libraries/functions.c"
 
 ECHO Компиляция main.c...
-CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DVERSION=\"%VERSION%\" -DLANG=%LANGUAGE% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -c ../main.c"
+CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% -DLANG=%LANGUAGE% -DU8X8_USE_PINS -DMUI_MAX_TEXT_LEN=64 -c ../main.c"
 
 ECHO Линковка файлов...
 CMD /C ""%CROSS_COMPILE%gcc.exe" %CCFLAGS% *.o -o firmware.o"

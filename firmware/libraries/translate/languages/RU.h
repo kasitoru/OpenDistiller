@@ -4,10 +4,6 @@
     URL: https://github.com/kasitoru/OpenDistiller
 */
 
-#ifndef VERSION
-    #define VERSION ""
-#endif
-
 // Шрифты
 #define I18N_NORMAL_FONT              u8g2_font_5x8_t_cyrillic
 #define I18N_BOLD_FONT                u8g2_font_6x13B_t_cyrillic
@@ -54,9 +50,10 @@
 #define I18N_YES_BUTTON               "Да"
 
 // О проекте
-#define I18N_ABOUT_TEXT_1             "OpenDistiller " VERSION
-#define I18N_ABOUT_TEXT_2             "Автор: Сергей Авдеев"
-#define I18N_ABOUT_TEXT_3             "HTTPS://KASITO.RU"
+#define I18N_ABOUT_TEXT_1             "OpenDistiller"
+#define I18N_ABOUT_TEXT_2             __DATE__ " (" __TIME__ ")"
+#define I18N_ABOUT_TEXT_3             "Автор: Сергей Авдеев"
+#define I18N_ABOUT_TEXT_4             "HTTPS://KASITO.RU"
 
 // Процесс ректификации
 #define I18N_HEATING_TITLE            "Нагрев куба"

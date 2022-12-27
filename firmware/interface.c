@@ -119,10 +119,10 @@ uint8_t mui_header_label(mui_t *ui, uint8_t msg) {
 }
 
 // Значение температуры
-#define TEMP_VALUE_WATER  1 // Температура на выходе водяного охлаждения (датчик 1)
-#define TEMP_VALUE_TSA    2 // Температура трубки связи с атмосферой (датчик 2)
-#define TEMP_VALUE_TSARGA 3 // Температура в царге (датчик 3)
-#define TEMP_VALUE_CUBE   4 // Температура в кубе (датчик 4)
+#define TEMP_VALUE_WATER  1 // Температура на выходе водяного охлаждения
+#define TEMP_VALUE_TSA    2 // Температура трубки связи с атмосферой
+#define TEMP_VALUE_TSARGA 3 // Температура в царге
+#define TEMP_VALUE_CUBE   4 // Температура в кубе
 #define TEMP_VALUE_TARGET 5 // Целевая температура царги
 uint8_t mui_temp_value(mui_t *ui, uint8_t msg) {
     switch(msg) {

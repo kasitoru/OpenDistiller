@@ -24,10 +24,10 @@
 u8g2_t u8g2; // Дисплей
 mui_t mui; // Интерфейс
 
-int16_t water_temperature = 0; // Температура на выходе водяного охлаждения (датчик 1)
-int16_t tsa_temperature = 0; // Температура трубки связи с атмосферой (датчик 2)
-int16_t tsarga_temperature = 0; // Температура в царге (датчик 3)
-int16_t cube_temperature = 0; // Температура в кубе (датчик 4)
+int16_t water_temperature = 0; // Температура на выходе водяного охлаждения
+int16_t tsa_temperature = 0; // Температура трубки связи с атмосферой
+int16_t tsarga_temperature = 0; // Температура в царге
+int16_t cube_temperature = 0; // Температура в кубе
 int16_t target_temperature = 0; // Целевая температура царги
 
 uint32_t now_millis = 0; // Текущее время с начала включения
@@ -124,10 +124,14 @@ int main(void) {
     HW_BUTTON_4_DDR &= ~_BV(HW_BUTTON_4_BIT); // Кнопка №4
     HW_BUTTON_5_DDR &= ~_BV(HW_BUTTON_5_BIT); // Кнопка №5
     // Датчики
-    HW_SENSOR_1_DDR &= ~_BV(HW_SENSOR_1_BIT); ds18b20wsp(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №1
-    HW_SENSOR_2_DDR &= ~_BV(HW_SENSOR_2_BIT); ds18b20wsp(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №2
-    HW_SENSOR_3_DDR &= ~_BV(HW_SENSOR_3_BIT); ds18b20wsp(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №3
-    HW_SENSOR_4_DDR &= ~_BV(HW_SENSOR_4_BIT); ds18b20wsp(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, -55, 125, DS18B20_RES12); // Датчик №4
+    HW_SENSOR_WATER_DDR &= ~_BV(HW_SENSOR_WATER_BIT);
+    HW_SENSOR_TSA_DDR &= ~_BV(HW_SENSOR_TSA_BIT);
+    HW_SENSOR_TSARGA_DDR &= ~_BV(HW_SENSOR_TSARGA_BIT);
+    HW_SENSOR_CUBE_DDR &= ~_BV(HW_SENSOR_CUBE_BIT);
+    ds18b20wsp(&HW_SENSOR_WATER_PORT, &HW_SENSOR_WATER_DDR, &HW_SENSOR_WATER_PIN, _BV(HW_SENSOR_WATER_BIT), NULL, -55, 125, DS18B20_RES12);
+    ds18b20wsp(&HW_SENSOR_TSA_PORT, &HW_SENSOR_TSA_DDR, &HW_SENSOR_TSA_PIN, _BV(HW_SENSOR_TSA_BIT), NULL, -55, 125, DS18B20_RES12);
+    ds18b20wsp(&HW_SENSOR_TSARGA_PORT, &HW_SENSOR_TSARGA_DDR, &HW_SENSOR_TSARGA_PIN, _BV(HW_SENSOR_TSARGA_BIT), NULL, -55, 125, DS18B20_RES12);
+    ds18b20wsp(&HW_SENSOR_CUBE_PORT, &HW_SENSOR_CUBE_DDR, &HW_SENSOR_CUBE_PIN, _BV(HW_SENSOR_CUBE_BIT), NULL, -55, 125, DS18B20_RES12);
     // Звук
     HW_BUZZER_DDR |= _BV(HW_BUZZER_BIT); // Зуммер
     // Реле
@@ -207,29 +211,29 @@ void loop(uint8_t *is_redraw) {
     if((now_millis - ds18b20read_time) > ((uint32_t) 1 * 1000)) { // Если с момента последнего опроса прошло более 1с
         if(ds18b20read_time > 0) { // Если был хотя бы один запрос значений, считываем температуру с датчиков
             int16_t read_temperature = 0; // Временная переменная для чтения значения датчиков
-            // Температура на выходе водяного охлаждения (датчик 1)
-            ds18b20read(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL, &read_temperature);
+            // Температура на выходе водяного охлаждения
+            ds18b20read(&HW_SENSOR_WATER_PORT, &HW_SENSOR_WATER_DDR, &HW_SENSOR_WATER_PIN, _BV(HW_SENSOR_WATER_BIT), NULL, &read_temperature);
             if((read_temperature != water_temperature) && !(read_temperature == 1360 /* 85.0 */ && !water_temperature)) {
                 water_temperature = read_temperature;
                 uart_printf("WATER:" FPN_FORMAT "\n", FPN_FRMT_BD(water_temperature), FPN_FRMT_AD(water_temperature));
                 *is_redraw = 1;
             }
-            // Температура трубки связи с атмосферой (датчик 2)
-            ds18b20read(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL, &read_temperature);
+            // Температура трубки связи с атмосферой
+            ds18b20read(&HW_SENSOR_TSA_PORT, &HW_SENSOR_TSA_DDR, &HW_SENSOR_TSA_PIN, _BV(HW_SENSOR_TSA_BIT), NULL, &read_temperature);
             if((read_temperature != tsa_temperature) && !(read_temperature == 1360 /* 85.0 */ && !tsa_temperature)) {
                 tsa_temperature = read_temperature;
                 uart_printf("TSA:" FPN_FORMAT "\n", FPN_FRMT_BD(tsa_temperature), FPN_FRMT_AD(tsa_temperature));
                 *is_redraw = 1;
             }
-            // Температура в царге (датчик 3)
-            ds18b20read(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, &read_temperature);
+            // Температура в царге
+            ds18b20read(&HW_SENSOR_TSARGA_PORT, &HW_SENSOR_TSARGA_DDR, &HW_SENSOR_TSARGA_PIN, _BV(HW_SENSOR_TSARGA_BIT), NULL, &read_temperature);
             if((read_temperature != tsarga_temperature) && !(read_temperature == 1360 /* 85.0 */ && !tsarga_temperature)) {
                 tsarga_temperature = read_temperature;
                 uart_printf("TSARGA:" FPN_FORMAT "\n", FPN_FRMT_BD(tsarga_temperature), FPN_FRMT_AD(tsarga_temperature));
                 *is_redraw = 1;
             }
-            // Температура в кубе (датчик 4)
-            ds18b20read(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, &read_temperature);
+            // Температура в кубе
+            ds18b20read(&HW_SENSOR_CUBE_PORT, &HW_SENSOR_CUBE_DDR, &HW_SENSOR_CUBE_PIN, _BV(HW_SENSOR_CUBE_BIT), NULL, &read_temperature);
             if((read_temperature != cube_temperature) && !(read_temperature == 1360 /* 85.0 */ && !cube_temperature)) {
                 cube_temperature = read_temperature;
                 uart_printf("CUBE:" FPN_FORMAT "\n", FPN_FRMT_BD(cube_temperature), FPN_FRMT_AD(cube_temperature));
@@ -237,10 +241,10 @@ void loop(uint8_t *is_redraw) {
             }
         }
         // Запрашиваем значения температуры у датчиков
-        ds18b20convert(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL); // Датчик 1
-        ds18b20convert(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL); // Датчик 2
-        ds18b20convert(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL); // Датчик 3
-        ds18b20convert(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL); // Датчик 4
+        ds18b20convert(&HW_SENSOR_WATER_PORT, &HW_SENSOR_WATER_DDR, &HW_SENSOR_WATER_PIN, _BV(HW_SENSOR_WATER_BIT), NULL); // Датчик воды
+        ds18b20convert(&HW_SENSOR_TSA_PORT, &HW_SENSOR_TSA_DDR, &HW_SENSOR_TSA_PIN, _BV(HW_SENSOR_TSA_BIT), NULL); // Датчик ТСА
+        ds18b20convert(&HW_SENSOR_TSARGA_PORT, &HW_SENSOR_TSARGA_DDR, &HW_SENSOR_TSARGA_PIN, _BV(HW_SENSOR_TSARGA_BIT), NULL); // Датчик царги
+        ds18b20convert(&HW_SENSOR_CUBE_PORT, &HW_SENSOR_CUBE_DDR, &HW_SENSOR_CUBE_PIN, _BV(HW_SENSOR_CUBE_BIT), NULL); // Датчик куба
         // Запоминаем время опроса
         ds18b20read_time = now_millis;
     }

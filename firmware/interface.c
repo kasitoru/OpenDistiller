@@ -142,7 +142,7 @@ uint8_t mui_temp_value(mui_t *ui, uint8_t msg) {
             else { ui->arg = TEXTLABEL_ALIGN_LEFT; } // По левому краю
             // Формируем текстовую надпись во временный буффер
             char buffer[MUI_MAX_TEXT_LEN + 1];
-            if(snprintf(buffer, (sizeof(buffer)/sizeof(*buffer)), FPN_FORMAT, FPN_GBD(temperature), FPN_GAD(temperature)) != -1) {
+            if(snprintf(buffer, (sizeof(buffer)/sizeof(*buffer)), FPN_FORMAT, FPN_FRMT_BD(temperature), FPN_FRMT_AD(temperature)) != -1) {
                 // Передаем этот буффер в функцию отрисовки
                 strcpy(ui->text, buffer);
                 return mui_text_label(ui, msg);
@@ -369,7 +369,7 @@ uint8_t mui_u8g2_i16_min_max_wm_mse_pi(mui_t *ui, uint8_t msg) {
             if(*value > max) { *value = max; }
             if(*value <= min) { *value = min; }
             char buffer[MUI_MAX_TEXT_LEN + 1];
-            uint8_t length = snprintf(buffer, (sizeof(buffer) / sizeof(*buffer)), FPN_FORMAT, FPN_GBD(*value), FPN_GAD(*value));
+            uint8_t length = snprintf(buffer, (sizeof(buffer) / sizeof(*buffer)), FPN_FORMAT, FPN_FRMT_BD(*value), FPN_FRMT_AD(*value));
             mui_u8g2_draw_button_pi(ui, length, 1, buffer);
             break;
         case MUIF_MSG_VALUE_INCREMENT:

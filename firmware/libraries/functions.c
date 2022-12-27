@@ -4,6 +4,8 @@
     URL: https://github.com/kasitoru/OpenDistiller
 */
 
+#include <stddef.h>
+#include <stdlib.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 
@@ -52,6 +54,25 @@ uint32_t get_millis() {
 	m = timer0_millis;
 	SREG = oldSREG;
 	return m;
+}
+
+// Подсчет количества цифр в числе
+size_t count_digits(int16_t number) {
+    size_t count = 0;
+    do {
+        number /= 10;
+        ++count;
+    } while(number != 0);
+    return count;
+}
+
+// Обрезать целое число
+int16_t truncate_integer(int16_t number, size_t length) {
+    while(count_digits(number) > length) {
+        int16_t n = (number / 10);
+        number = ((abs(number - (n * 10)) < 5) ? (n) : ((n < 0) ? (n - 1) : (n + 1)));
+    }
+    return number;
 }
 
 // Рассчет контрольной суммы

@@ -258,7 +258,7 @@ void loop(uint8_t *is_redraw) {
             SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
             SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             // Проверяем, не пора ли включить подачу воды
-            if(((float) cube_temperature / 16) >= ((float) CONFIG.water_cube_temperature)) {
+            if(cube_temperature >= FPN_SBD(CONFIG.water_cube_temperature)) {
                 set_working_mode(WM_WATERING, GUI_RECTIFICATE_FORM); // Включаем воду
                 *is_redraw = 1; // Нужна перерисовка интерфейса
             }
@@ -269,7 +269,7 @@ void loop(uint8_t *is_redraw) {
             SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
             SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
             // Проверяем, не пора ли начать "работать на себя"
-            if(((float) tsarga_temperature / 16) >= ((float) CONFIG.itself_working_temperature)) {
+            if(tsarga_temperature >= FPN_SBD(CONFIG.itself_working_temperature)) {
                 set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Режим "работа на себя"
                 *is_redraw = 1; // Нужна перерисовка интерфейса
             }
@@ -327,7 +327,7 @@ void loop(uint8_t *is_redraw) {
             // Во время отбора тела
             if(REFLUX_STATUS == RS_YESBODY) {
                 // Если пора завершить отбор товарного спирта
-                if(((float) cube_temperature / 16) >= CONFIG.ethanol_cube_temperature) {
+                if(cube_temperature >= FPN_SBD(CONFIG.ethanol_cube_temperature)) {
                     set_working_mode(WM_CIRCULATE, GUI_CIRCULATE_FORM); // Подтверждение сбора оборотки
                     REFLUX_STATUS = RS_NOTCIRC; // Но сам отбор пока не начинаем
                     *is_redraw = 1; // Нужна перерисовка интерфейса
@@ -336,7 +336,7 @@ void loop(uint8_t *is_redraw) {
             // Во время отбора оборотного спирта
             if(REFLUX_STATUS == RS_YESCIRC) {
                 // Если пора завершать ректификацию
-                if(((float) cube_temperature / 16) >= CONFIG.final_cube_temperature) {
+                if(cube_temperature >= FPN_SBD(CONFIG.final_cube_temperature)) {
                     set_working_mode(WM_DONE, GUI_FINISH_FORM); // Режим "Готово"
                     *is_redraw = 1; // Нужна перерисовка интерфейса
                 }
@@ -388,9 +388,9 @@ void loop(uint8_t *is_redraw) {
                     ||
                     (!cube_temperature) // Датчик температуры в кубе
                )) ||
-               (CONFIG.tsa_protection && (((float) tsa_temperature / 16) > CONFIG.tsa_max_temperature)) // Превышение температуры ТСА
+               (CONFIG.tsa_protection && (tsa_temperature > FPN_SBD(CONFIG.tsa_max_temperature))) // Превышение температуры ТСА
                ||
-               (CONFIG.water_protection && (((float) water_temperature / 16) > CONFIG.water_max_temperature)) // Превышение температуры воды
+               (CONFIG.water_protection && (water_temperature > FPN_SBD(CONFIG.water_max_temperature))) // Превышение температуры воды
             ) {
                 set_working_mode(WM_ERROR, GUI_FINISH_FORM); // Режим "ошибка"
                 *is_redraw = 1; // Нужна перерисовка интерфейса

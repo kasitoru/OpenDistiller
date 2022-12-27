@@ -118,11 +118,11 @@ int main(void) {
     u8g2_SetPowerSave(&u8g2, 0);
     u8g2_ClearDisplay(&u8g2);
     // Кнопки
-    HW_BUTTON_1_DDR &= ~_BV(HW_BUTTON_1_BIT); // Кнопка №1
-    HW_BUTTON_2_DDR &= ~_BV(HW_BUTTON_2_BIT); // Кнопка №2
-    HW_BUTTON_3_DDR &= ~_BV(HW_BUTTON_3_BIT); // Кнопка №3
-    HW_BUTTON_4_DDR &= ~_BV(HW_BUTTON_4_BIT); // Кнопка №4
-    HW_BUTTON_5_DDR &= ~_BV(HW_BUTTON_5_BIT); // Кнопка №5
+    HW_BUTTON_PREV_DDR &= ~_BV(HW_BUTTON_PREV_BIT);
+    HW_BUTTON_NEXT_DDR &= ~_BV(HW_BUTTON_NEXT_BIT);
+    HW_BUTTON_SELECT_DDR &= ~_BV(HW_BUTTON_SELECT_BIT);
+    HW_BUTTON_DOWN_DDR &= ~_BV(HW_BUTTON_DOWN_BIT);
+    HW_BUTTON_UP_DDR &= ~_BV(HW_BUTTON_UP_BIT);
     // Датчики
     HW_SENSOR_WATER_DDR &= ~_BV(HW_SENSOR_WATER_BIT);
     HW_SENSOR_TSA_DDR &= ~_BV(HW_SENSOR_TSA_BIT);

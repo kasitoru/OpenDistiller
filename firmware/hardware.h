@@ -24,30 +24,30 @@
 #define HW_DISPLAY_CS_PORT    PORTB
 
 // Кнопки
-#define HW_BUTTON_1_BIT       PB0
-#define HW_BUTTON_1_PIN       PINB
-#define HW_BUTTON_1_DDR       DDRB
-#define HW_BUTTON_1_PORT      PORTB
+#define HW_BUTTON_PREV_BIT    PB0
+#define HW_BUTTON_PREV_PIN    PINB
+#define HW_BUTTON_PREV_DDR    DDRB
+#define HW_BUTTON_PREV_PORT   PORTB
 
-#define HW_BUTTON_2_BIT       PD7
-#define HW_BUTTON_2_PIN       PIND
-#define HW_BUTTON_2_DDR       DDRD
-#define HW_BUTTON_2_PORT      PORTD
+#define HW_BUTTON_NEXT_BIT    PD7
+#define HW_BUTTON_NEXT_PIN    PIND
+#define HW_BUTTON_NEXT_DDR    DDRD
+#define HW_BUTTON_NEXT_PORT   PORTD
 
-#define HW_BUTTON_3_BIT       PD6
-#define HW_BUTTON_3_PIN       PIND
-#define HW_BUTTON_3_DDR       DDRD
-#define HW_BUTTON_3_PORT      PORTD
+#define HW_BUTTON_SELECT_BIT  PD6
+#define HW_BUTTON_SELECT_PIN  PIND
+#define HW_BUTTON_SELECT_DDR  DDRD
+#define HW_BUTTON_SELECT_PORT PORTD
 
-#define HW_BUTTON_4_BIT       PD5
-#define HW_BUTTON_4_PIN       PIND
-#define HW_BUTTON_4_DDR       DDRD
-#define HW_BUTTON_4_PORT      PORTD
+#define HW_BUTTON_DOWN_BIT    PD5
+#define HW_BUTTON_DOWN_PIN    PIND
+#define HW_BUTTON_DOWN_DDR    DDRD
+#define HW_BUTTON_DOWN_PORT   PORTD
 
-#define HW_BUTTON_5_BIT       PD4
-#define HW_BUTTON_5_PIN       PIND
-#define HW_BUTTON_5_DDR       DDRD
-#define HW_BUTTON_5_PORT      PORTD
+#define HW_BUTTON_UP_BIT      PD4
+#define HW_BUTTON_UP_PIN      PIND
+#define HW_BUTTON_UP_DDR      DDRD
+#define HW_BUTTON_UP_PORT     PORTD
 
 // Датчики
 #define HW_SENSOR_WATER_BIT   PC0

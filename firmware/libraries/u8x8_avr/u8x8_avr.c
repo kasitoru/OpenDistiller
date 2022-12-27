@@ -126,19 +126,19 @@ uint8_t u8x8_avr_gpio_and_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
             if(msg >= U8X8_MSG_GPIO(0)) {
                 switch(u8x8_GetPinIndex(u8x8, msg)) {
                     case U8X8_PIN_MENU_PREV:
-                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_1_PIN & _BV(HW_BUTTON_1_BIT)));
+                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_PREV_PIN & _BV(HW_BUTTON_PREV_BIT)));
                         break;
                     case U8X8_PIN_MENU_NEXT:
-                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_2_PIN & _BV(HW_BUTTON_2_BIT)));
+                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_NEXT_PIN & _BV(HW_BUTTON_NEXT_BIT)));
                         break;
                     case U8X8_PIN_MENU_SELECT:
-                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_3_PIN & _BV(HW_BUTTON_3_BIT)));
+                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_SELECT_PIN & _BV(HW_BUTTON_SELECT_BIT)));
                         break;
                     case U8X8_PIN_MENU_DOWN:
-                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_4_PIN & _BV(HW_BUTTON_4_BIT)));
+                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_DOWN_PIN & _BV(HW_BUTTON_DOWN_BIT)));
                         break;
                     case U8X8_PIN_MENU_UP:
-                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_5_PIN & _BV(HW_BUTTON_5_BIT)));
+                        u8x8_SetGPIOResult(u8x8, !(HW_BUTTON_UP_PIN & _BV(HW_BUTTON_UP_BIT)));
                         break;
                     default:
                         return 0;

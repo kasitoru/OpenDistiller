@@ -352,7 +352,7 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
             // Выбираем нужное действие, в зависимости от текущей формы
             switch(mui_GetCurrentFormId(ui)) {
                 case GUI_RECTIFICATE_FORM: // Процесс ректификации
-                    target_temperature--; // Уменьшаем целевую температуру
+                    target_temperature = ((target_temperature > 0) ? target_temperature - 1 : 0); // Уменьшаем целевую температуру
                     break;
             }
             return 0;
@@ -360,7 +360,7 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
             // Выбираем нужное действие, в зависимости от текущей формы
             switch(mui_GetCurrentFormId(ui)) {
                 case GUI_RECTIFICATE_FORM: // Процесс ректификации
-                    target_temperature++; // Увеличиваем целевую температуру
+                    target_temperature = ((target_temperature < 2000) ? target_temperature + 1 : 2000); // Увеличиваем целевую температуру
                     break;
             }
             return 0;

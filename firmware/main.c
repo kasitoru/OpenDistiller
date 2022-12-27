@@ -155,7 +155,7 @@ int main(void) {
         CONFIG.final_cube_temperature = 100; // Температура окончания работы (от 85 до 110)
         CONFIG.itself_working_temperature = 70; // Температура начала "работы на себя" (от 60 до 80)
         CONFIG.itself_working_initial_time = 30; // Длительность "работы на себя" в минутах (от 10 до 60)
-        CONFIG.target_temperature_delta = 1; // Дельта целевой температуры (ТЕМП = (ЗНАЧ * 625) / 10000)
+        CONFIG.target_temperature_delta = 2; // Дельта целевой температуры (ТЕМП = (ЗНАЧ * 625) / 10000)
         CONFIG.target_recovery_time = 1; // Время восстановления в минутах (от 1 до 30)
         CONFIG.sensors_protection = 0; // Включить контроль работоспособности датчиков (0 = нет, 1 = да)
         CONFIG.tsa_protection = 1; // Включить защиту по температуре ТСА (0 = нет, 1 = да)

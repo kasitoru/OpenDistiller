@@ -9,7 +9,7 @@
 
 void init_millis();
 uint32_t get_millis();
-uint8_t crc8(uint8_t *buffer, uint8_t size);
+uint8_t crc8(uint8_t *buffer, size_t size);
 void restart_atmega();
 
 // Изменить состояние порта

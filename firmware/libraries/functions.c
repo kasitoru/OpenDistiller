@@ -56,11 +56,11 @@ uint32_t get_millis() {
 
 // Рассчет контрольной суммы
 // https://alexgyver.ru/lessons/crc/
-uint8_t crc8(uint8_t *buffer, uint8_t size) {
+uint8_t crc8(uint8_t *buffer, size_t size) {
     uint8_t crc = 0;
     for(uint8_t i = 0; i < size; i++) {
         uint8_t data = buffer[i];
-        for(int j = 8; j > 0; j--) {
+        for(size_t j = 8; j > 0; j--) {
             crc = ((crc ^ data) & 1) ? (crc >> 1) ^ 0x8C : (crc >> 1);
             data >>= 1;
         }

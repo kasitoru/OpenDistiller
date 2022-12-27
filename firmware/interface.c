@@ -349,8 +349,21 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
             }
             break;
         case MUIF_MSG_VALUE_DECREMENT: // Кнопка "-"
+            // Выбираем нужное действие, в зависимости от текущей формы
+            switch(mui_GetCurrentFormId(ui)) {
+                case GUI_RECTIFICATE_FORM: // Процесс ректификации
+                    target_temperature--; // Уменьшаем целевую температуру
+                    break;
+            }
+            return 0;
         case MUIF_MSG_VALUE_INCREMENT: // Кнопка "+"
-            return 0; // Ничего не делаем
+            // Выбираем нужное действие, в зависимости от текущей формы
+            switch(mui_GetCurrentFormId(ui)) {
+                case GUI_RECTIFICATE_FORM: // Процесс ректификации
+                    target_temperature++; // Увеличиваем целевую температуру
+                    break;
+            }
+            return 0;
     }
     return mui_u8g2_btn_goto_w2_fi(ui, msg); // Вызываем нативный callback
 }

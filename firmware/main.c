@@ -209,28 +209,28 @@ void loop(uint8_t *is_redraw) {
             int16_t read_temperature = 0; // Временная переменная для чтения значения датчиков
             // Температура на выходе водяного охлаждения (датчик 1)
             ds18b20read(&HW_SENSOR_1_PORT, &HW_SENSOR_1_DDR, &HW_SENSOR_1_PIN, _BV(HW_SENSOR_1_BIT), NULL, &read_temperature);
-            if((read_temperature != water_temperature) && !(read_temperature == 1360 && !water_temperature)) {
+            if((read_temperature != water_temperature) && !(read_temperature == 1360 /* 85.0 */ && !water_temperature)) {
                 water_temperature = read_temperature;
                 uart_printf("WATER:" FPN_FORMAT "\n", FPN_FRMT_BD(water_temperature), FPN_FRMT_AD(water_temperature));
                 *is_redraw = 1;
             }
             // Температура трубки связи с атмосферой (датчик 2)
             ds18b20read(&HW_SENSOR_2_PORT, &HW_SENSOR_2_DDR, &HW_SENSOR_2_PIN, _BV(HW_SENSOR_2_BIT), NULL, &read_temperature);
-            if((read_temperature != tsa_temperature) && !(read_temperature == 1360 && !tsa_temperature)) {
+            if((read_temperature != tsa_temperature) && !(read_temperature == 1360 /* 85.0 */ && !tsa_temperature)) {
                 tsa_temperature = read_temperature;
                 uart_printf("TSA:" FPN_FORMAT "\n", FPN_FRMT_BD(tsa_temperature), FPN_FRMT_AD(tsa_temperature));
                 *is_redraw = 1;
             }
             // Температура в царге (датчик 3)
             ds18b20read(&HW_SENSOR_3_PORT, &HW_SENSOR_3_DDR, &HW_SENSOR_3_PIN, _BV(HW_SENSOR_3_BIT), NULL, &read_temperature);
-            if((read_temperature != tsarga_temperature) && !(read_temperature == 1360 && !tsarga_temperature)) {
+            if((read_temperature != tsarga_temperature) && !(read_temperature == 1360 /* 85.0 */ && !tsarga_temperature)) {
                 tsarga_temperature = read_temperature;
                 uart_printf("TSARGA:" FPN_FORMAT "\n", FPN_FRMT_BD(tsarga_temperature), FPN_FRMT_AD(tsarga_temperature));
                 *is_redraw = 1;
             }
             // Температура в кубе (датчик 4)
             ds18b20read(&HW_SENSOR_4_PORT, &HW_SENSOR_4_DDR, &HW_SENSOR_4_PIN, _BV(HW_SENSOR_4_BIT), NULL, &read_temperature);
-            if((read_temperature != cube_temperature) && !(read_temperature == 1360 && !cube_temperature)) {
+            if((read_temperature != cube_temperature) && !(read_temperature == 1360 /* 85.0 */ && !cube_temperature)) {
                 cube_temperature = read_temperature;
                 uart_printf("CUBE:" FPN_FORMAT "\n", FPN_FRMT_BD(cube_temperature), FPN_FRMT_AD(cube_temperature));
                 *is_redraw = 1;

@@ -135,9 +135,12 @@ int main(void) {
     // Звук
     HW_BUZZER_DDR |= _BV(HW_BUZZER_BIT); // Зуммер
     // Реле
-    HW_RELAY_1_DDR |= _BV(HW_RELAY_1_BIT); SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Реле №1
-    HW_RELAY_2_DDR |= _BV(HW_RELAY_2_BIT); SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Реле №2
-    HW_RELAY_3_DDR |= _BV(HW_RELAY_3_BIT); SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Реле №3
+    HW_RELAY_WATER_DDR |= _BV(HW_RELAY_WATER_BIT);
+    HW_RELAY_HEAT_DDR |= _BV(HW_RELAY_HEAT_BIT);
+    HW_RELAY_ALCO_DDR |= _BV(HW_RELAY_ALCO_BIT);
+    SET_PIN_STATE(HW_RELAY_WATER_PORT, HW_RELAY_WATER_BIT, HW_RELAY_WATER_INVERT, 0);
+    SET_PIN_STATE(HW_RELAY_HEAT_PORT, HW_RELAY_HEAT_BIT, HW_RELAY_HEAT_INVERT, 0);
+    SET_PIN_STATE(HW_RELAY_ALCO_PORT, HW_RELAY_ALCO_BIT, HW_RELAY_ALCO_INVERT, 0);
     // Bluetooth модуль
     HW_BLUETOOTH_EN_DDR |= _BV(HW_BLUETOOTH_EN_BIT); // Управление питанием
     // Последовательный порт
@@ -252,15 +255,15 @@ void loop(uint8_t *is_redraw) {
     switch(WORKING_MODE) {
         case WM_SETTING: // Параметры
             // Управляем реле
-            SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Отключаем воду
-            SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Отключаем нагрев
-            SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
+            SET_PIN_STATE(HW_RELAY_WATER_PORT, HW_RELAY_WATER_BIT, HW_RELAY_WATER_INVERT, 0); // Отключаем воду
+            SET_PIN_STATE(HW_RELAY_HEAT_PORT, HW_RELAY_HEAT_BIT, HW_RELAY_HEAT_INVERT, 0); // Отключаем нагрев
+            SET_PIN_STATE(HW_RELAY_ALCO_PORT, HW_RELAY_ALCO_BIT, HW_RELAY_ALCO_INVERT, 0); // Отключаем отбор
             break;
         case WM_HEATING: // Нагрев куба
             // Управляем реле
-            SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Отключаем воду
-            SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
-            SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
+            SET_PIN_STATE(HW_RELAY_WATER_PORT, HW_RELAY_WATER_BIT, HW_RELAY_WATER_INVERT, 0); // Отключаем воду
+            SET_PIN_STATE(HW_RELAY_HEAT_PORT, HW_RELAY_HEAT_BIT, HW_RELAY_HEAT_INVERT, 1); // Включаем нагрев
+            SET_PIN_STATE(HW_RELAY_ALCO_PORT, HW_RELAY_ALCO_BIT, HW_RELAY_ALCO_INVERT, 0); // Отключаем отбор
             // Проверяем, не пора ли включить подачу воды
             if(cube_temperature >= FPN_SBD(CONFIG.water_cube_temperature)) {
                 set_working_mode(WM_WATERING, GUI_RECTIFICATE_FORM); // Включаем воду
@@ -269,9 +272,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_WATERING: // Включение воды
             // Управляем реле
-            SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
-            SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
-            SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
+            SET_PIN_STATE(HW_RELAY_WATER_PORT, HW_RELAY_WATER_BIT, HW_RELAY_WATER_INVERT, 1); // Включаем воду
+            SET_PIN_STATE(HW_RELAY_HEAT_PORT, HW_RELAY_HEAT_BIT, HW_RELAY_HEAT_INVERT, 1); // Включаем нагрев
+            SET_PIN_STATE(HW_RELAY_ALCO_PORT, HW_RELAY_ALCO_BIT, HW_RELAY_ALCO_INVERT, 0); // Отключаем отбор
             // Проверяем, не пора ли начать "работать на себя"
             if(tsarga_temperature >= FPN_SBD(CONFIG.itself_working_temperature)) {
                 set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Режим "работа на себя"
@@ -280,9 +283,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_WORKING: // Работа на себя
             // Управляем реле
-            SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
-            SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
-            SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
+            SET_PIN_STATE(HW_RELAY_WATER_PORT, HW_RELAY_WATER_BIT, HW_RELAY_WATER_INVERT, 1); // Включаем воду
+            SET_PIN_STATE(HW_RELAY_HEAT_PORT, HW_RELAY_HEAT_BIT, HW_RELAY_HEAT_INVERT, 1); // Включаем нагрев
+            SET_PIN_STATE(HW_RELAY_ALCO_PORT, HW_RELAY_ALCO_BIT, HW_RELAY_ALCO_INVERT, 0); // Отключаем отбор
             // Если отбора голов еще не было
             if(REFLUX_STATUS == RS_NOTHEAD) {
                 // Начальная "работа на себя" заданное время
@@ -320,9 +323,9 @@ void loop(uint8_t *is_redraw) {
         case WM_GETHEAD: // Отбор голов
         case WM_GETBODY: // Отбор тела
             // Управляем реле
-            SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
-            SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
-            SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 1); // Включаем отбор
+            SET_PIN_STATE(HW_RELAY_WATER_PORT, HW_RELAY_WATER_BIT, HW_RELAY_WATER_INVERT, 1); // Включаем воду
+            SET_PIN_STATE(HW_RELAY_HEAT_PORT, HW_RELAY_HEAT_BIT, HW_RELAY_HEAT_INVERT, 1); // Включаем нагрев
+            SET_PIN_STATE(HW_RELAY_ALCO_PORT, HW_RELAY_ALCO_BIT, HW_RELAY_ALCO_INVERT, 1); // Включаем отбор
             // Если значение температуры датчика стало больше суммы целевой температуры и дельты
             if((tsarga_temperature - target_temperature) > CONFIG.target_temperature_delta) {
                 set_working_mode(WM_WORKING, GUI_RECTIFICATE_FORM); // Начинаем "работать на себя"
@@ -348,9 +351,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_CIRCULATE: // Подтверждение начала сбора оборотного спирта
             // Управляем реле
-            SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
-            SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 1); // Включаем нагрев
-            SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
+            SET_PIN_STATE(HW_RELAY_WATER_PORT, HW_RELAY_WATER_BIT, HW_RELAY_WATER_INVERT, 1); // Включаем воду
+            SET_PIN_STATE(HW_RELAY_HEAT_PORT, HW_RELAY_HEAT_BIT, HW_RELAY_HEAT_INVERT, 1); // Включаем нагрев
+            SET_PIN_STATE(HW_RELAY_ALCO_PORT, HW_RELAY_ALCO_BIT, HW_RELAY_ALCO_INVERT, 0); // Отключаем отбор
             break;
         case WM_ERROR: // Ошибка
             if((now_millis % 1000) == 0) { // Каждую секунду
@@ -358,9 +361,9 @@ void loop(uint8_t *is_redraw) {
             }
         case WM_DONE: // Готово
             // Управляем реле
-            SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 1); // Включаем воду
-            SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Отключаем нагрев
-            SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
+            SET_PIN_STATE(HW_RELAY_WATER_PORT, HW_RELAY_WATER_BIT, HW_RELAY_WATER_INVERT, 1); // Включаем воду
+            SET_PIN_STATE(HW_RELAY_HEAT_PORT, HW_RELAY_HEAT_BIT, HW_RELAY_HEAT_INVERT, 0); // Отключаем нагрев
+            SET_PIN_STATE(HW_RELAY_ALCO_PORT, HW_RELAY_ALCO_BIT, HW_RELAY_ALCO_INVERT, 0); // Отключаем отбор
             // Сбрасываем флегму в течении заданного времени
             if((now_millis - last_event_time) > ((uint32_t) CONFIG.phlegm_wait_time * 60 * 1000)) {
                 set_working_mode(WM_FINISH, GUI_FINISH_FORM); // Режим "Завершено"
@@ -369,9 +372,9 @@ void loop(uint8_t *is_redraw) {
             break;
         case WM_FINISH: // Завершено
             // Управляем реле
-            SET_PIN_STATE(HW_RELAY_1_PORT, HW_RELAY_1_BIT, HW_RELAY_1_INVERTED, 0); // Отключаем воду
-            SET_PIN_STATE(HW_RELAY_2_PORT, HW_RELAY_2_BIT, HW_RELAY_2_INVERTED, 0); // Отключаем нагрев
-            SET_PIN_STATE(HW_RELAY_3_PORT, HW_RELAY_3_BIT, HW_RELAY_3_INVERTED, 0); // Отключаем отбор
+            SET_PIN_STATE(HW_RELAY_WATER_PORT, HW_RELAY_WATER_BIT, HW_RELAY_WATER_INVERT, 0); // Отключаем воду
+            SET_PIN_STATE(HW_RELAY_HEAT_PORT, HW_RELAY_HEAT_BIT, HW_RELAY_HEAT_INVERT, 0); // Отключаем нагрев
+            SET_PIN_STATE(HW_RELAY_ALCO_PORT, HW_RELAY_ALCO_BIT, HW_RELAY_ALCO_INVERT, 0); // Отключаем отбор
             break;
     }
 

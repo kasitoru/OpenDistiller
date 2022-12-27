@@ -77,23 +77,23 @@
 #define HW_BUZZER_PORT        PORTB
 
 // Реле
-#define HW_RELAY_1_INVERTED   1
-#define HW_RELAY_1_BIT        PC5
-#define HW_RELAY_1_PIN        PINC
-#define HW_RELAY_1_DDR        DDRC
-#define HW_RELAY_1_PORT       PORTC
+#define HW_RELAY_WATER_INVERT 1
+#define HW_RELAY_WATER_BIT    PC5
+#define HW_RELAY_WATER_PIN    PINC
+#define HW_RELAY_WATER_DDR    DDRC
+#define HW_RELAY_WATER_PORT   PORTC
 
-#define HW_RELAY_2_INVERTED   1
-#define HW_RELAY_2_BIT        PC4
-#define HW_RELAY_2_PIN        PINC
-#define HW_RELAY_2_DDR        DDRC
-#define HW_RELAY_2_PORT       PORTC
+#define HW_RELAY_HEAT_INVERT  1
+#define HW_RELAY_HEAT_BIT     PC4
+#define HW_RELAY_HEAT_PIN     PINC
+#define HW_RELAY_HEAT_DDR     DDRC
+#define HW_RELAY_HEAT_PORT    PORTC
 
-#define HW_RELAY_3_INVERTED   1
-#define HW_RELAY_3_BIT        PC3
-#define HW_RELAY_3_PIN        PINC
-#define HW_RELAY_3_DDR        DDRC
-#define HW_RELAY_3_PORT       PORTC
+#define HW_RELAY_ALCO_INVERT  1
+#define HW_RELAY_ALCO_BIT     PC3
+#define HW_RELAY_ALCO_PIN     PINC
+#define HW_RELAY_ALCO_DDR     DDRC
+#define HW_RELAY_ALCO_PORT    PORTC
 
 // Bluetooth
 #define HW_BLUETOOTH_EN_BIT   PD2

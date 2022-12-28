@@ -45,7 +45,7 @@
 
 // Сброс настроек
 #define I18N_RESET_TEXT_1             "Установить"
-#define I18N_RESET_TEXT_2             "значения по-умолчанию?"
+#define I18N_RESET_TEXT_2             "значения по умолчанию?"
 #define I18N_NO_BUTTON                "Нет"
 #define I18N_YES_BUTTON               "Да"
 

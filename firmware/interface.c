@@ -336,8 +336,10 @@ uint8_t mui_goto_button(mui_t *ui, uint8_t msg) {
                         case GUI_RECTIFICATE_FORM: // Кнопка "ПРОДОЛЖИТЬ"
                             REFLUX_STATUS = RS_YESCIRC; // Начинаем отбор оборотки
                             set_working_mode(WM_GETBODY, GUI_RECTIFICATE_FORM); // Переходим к отбору
+                            break;
                         case GUI_FINISH_FORM: // Кнопка "ЗАВЕРШИТЬ"
                             set_working_mode(WM_DONE, GUI_FINISH_FORM); // Завершаем отбор
+                            break;
                     }
                     return 0;
                 case GUI_FINISH_FORM: // Ректификация завершена
